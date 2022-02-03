@@ -11,7 +11,7 @@ use function React\Promise\reject;
  * Wrapper for PipeConnection which encodes and decodes Civi-specific
  * requests.
  */
-class CiviPipeClient implements CiviClientInterface {
+class CiviPipeClient implements CiviPipeClientInterface {
 
   /**
    * @var \Civi\Coworker\PipeConnection
