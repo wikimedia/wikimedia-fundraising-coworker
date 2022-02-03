@@ -1,9 +1,7 @@
 <?php
 
-namespace Civi\Coworker;
+namespace Civi\Coworker\Client;
 
-use Civi\Coworker\Client\CiviClientInterface;
-use Civi\Coworker\Client\CiviJsonRpcClientTrait;
 use Civi\Coworker\Util\JsonRpc;
 use Monolog\Logger;
 use React\Promise\PromiseInterface;
@@ -13,7 +11,7 @@ use function React\Promise\reject;
  * Wrapper for PipeConnection which encodes and decodes Civi-specific
  * requests.
  */
-class CiviPipeConnection implements CiviClientInterface {
+class CiviPipeClient implements CiviClientInterface {
 
   /**
    * @var \Civi\Coworker\PipeConnection

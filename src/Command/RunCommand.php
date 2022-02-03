@@ -2,7 +2,7 @@
 
 namespace Civi\Coworker\Command;
 
-use Civi\Coworker\CiviPipeConnection;
+use Civi\Coworker\Client\CiviPipeClient;
 use Civi\Coworker\CiviQueueWatcher;
 use Civi\Coworker\PipeConnection;
 use Civi\Coworker\PipePool;
@@ -69,7 +69,7 @@ class RunCommand extends Command {
     //   'work' => $workChannel,
     // ]);
 
-    $ctl = new CiviPipeConnection(
+    $ctl = new CiviPipeClient(
       new PipeConnection($config, 'ctl', $this->logger->withName('CtlPipe')),
       $this->logger->withName('CtlConn'));
     $work = new PipePool($config, $this->logger->withName('WorkPool'));

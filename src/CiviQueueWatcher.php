@@ -2,6 +2,7 @@
 
 namespace Civi\Coworker;
 
+use Civi\Coworker\Client\CiviPipeClient;
 use Evenement\EventEmitterTrait;
 use React\EventLoop\Loop;
 use React\Promise\Deferred;
@@ -45,7 +46,7 @@ class CiviQueueWatcher {
    * FIXME: Shouldn't we be restrting the ctl connection periodically?
    * Maybe it should build on a PipePool of maxConcurrentWorkers=1?
    *
-   * @var \Civi\Coworker\CiviPipeConnection
+   * @var \Civi\Coworker\Client\CiviPipeClient
    */
   protected $ctl;
 
@@ -76,11 +77,11 @@ class CiviQueueWatcher {
 
   /**
    * @param \Civi\Coworker\Configuration $config
-   * @param \Civi\Coworker\CiviPipeConnection $ctl
+   * @param \Civi\Coworker\Client\CiviPipeClient $ctl
    * @param \Civi\Coworker\PipePool $pipePool
    * @param \Monolog\Logger $logger
    */
-  public function __construct(Configuration $config, CiviPipeConnection $ctl, PipePool $pipePool, \Monolog\Logger $logger) {
+  public function __construct(Configuration $config, CiviPipeClient $ctl, PipePool $pipePool, \Monolog\Logger $logger) {
     $this->config = $config;
     $this->ctl = $ctl;
     $this->pipePool = $pipePool;
