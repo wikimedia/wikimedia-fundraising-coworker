@@ -2,8 +2,8 @@
 
 namespace Civi\Coworker;
 
-use Civi\Coworker\Util\IdUtil;
-use Civi\Coworker\Util\JsonRpc;
+use Civi\Coworker\Client\CiviClientInterface;
+use Civi\Coworker\Client\CiviJsonRpcClientTrait;
 use Monolog\Logger;
 use React\Promise\PromiseInterface;
 use function React\Promise\reject;
@@ -12,7 +12,7 @@ use function React\Promise\reject;
  * Wrapper for PipeConnection which encodes and decodes Civi-specific
  * requests.
  */
-class CiviPipeConnection {
+class CiviPipeConnection implements CiviClientInterface {
 
   const MINIMUM_VERSION = '5.47.alpha1';
   //  const MINIMUM_VERSION = '5.49.alpha1';
@@ -40,6 +40,8 @@ class CiviPipeConnection {
     $this->pipeConnection = $pipeConnection;
     $this->logger = $logger ?: new Logger(static::CLASS);
   }
+
+  use CiviJsonRpcClientTrait;
 
   /**
    * @return \React\Promise\PromiseInterface
@@ -71,64 +73,8 @@ class CiviPipeConnection {
     return $this->pipeConnection->stop($timeout);
   }
 
-  public function request(string $method, array $params = [], ?string $caller = NULL): PromiseInterface {
-    $id = IdUtil::next(__CLASS__ . '::request');
-
-    $requestLine = JsonRpc::createRequest($method, $params, $id);
-    $request = ['method' => $method, 'params' => $params, 'caller' => $caller];
-    // $this->logger->debug(sprintf('Send request #%s: %s', $id, $requestLine));
-    return $this->pipeConnection->run($requestLine)
-      ->then(function(string $responseLine) use ($request, $id) {
-        // $this->logger->debug(sprintf('Receive response #%s: %s', $id, $responseLine));
-        return JsonRpc::parseResponse($responseLine, $id, $request);
-      });
-  }
-
-  /**
-   * @param string $entity
-   * @param string $action
-   * @param array $params
-   * @return \React\Promise\PromiseInterface
-   * @see \Civi\Pipe\PublicMethods::api3()
-   */
-  public function api3(string $entity, string $action, array $params = []): PromiseInterface {
-    return $this->request('api3', [$entity, $action, $params], $this->findCaller(2));
-  }
-
-  /**
-   * @param string $entity
-   * @param string $action
-   * @param array $params
-   * @return \React\Promise\PromiseInterface
-   * @see \Civi\Pipe\PublicMethods::api4()
-   */
-  public function api4(string $entity, string $action, array $params = []): PromiseInterface {
-    return $this->request('api4', [$entity, $action, $params], $this->findCaller(2));
-  }
-
-  /**
-   * @param array $params
-   * @return \React\Promise\PromiseInterface
-   * @see \Civi\Pipe\PublicMethods::login()
-   */
-  public function login(array $params): PromiseInterface {
-    return $this->request('login', $params, $this->findCaller(2));
-  }
-
-  /**
-   * @param array $params
-   * @return \React\Promise\PromiseInterface
-   * @see \Civi\Pipe\PublicMethods::options()
-   */
-  public function options(array $params): PromiseInterface {
-    return $this->request('options', $params, $this->findCaller(2));
-  }
-
-  protected function findCaller(int $steps): string {
-    $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $steps);
-    $caller = array_pop($trace);
-    $result = sprintf('%s @ %s', $caller['file'], $caller['line']);
-    return $result;
+  protected function sendJsonRpc(string $requestLine): PromiseInterface {
+    return $this->pipeConnection->run($requestLine);
   }
 
 }
