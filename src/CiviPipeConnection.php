@@ -4,6 +4,7 @@ namespace Civi\Coworker;
 
 use Civi\Coworker\Client\CiviClientInterface;
 use Civi\Coworker\Client\CiviJsonRpcClientTrait;
+use Civi\Coworker\Util\JsonRpc;
 use Monolog\Logger;
 use React\Promise\PromiseInterface;
 use function React\Promise\reject;
@@ -13,9 +14,6 @@ use function React\Promise\reject;
  * requests.
  */
 class CiviPipeConnection implements CiviClientInterface {
-
-  const MINIMUM_VERSION = '5.47.alpha1';
-  //  const MINIMUM_VERSION = '5.49.alpha1';
 
   /**
    * @var \Civi\Coworker\PipeConnection
@@ -51,14 +49,13 @@ class CiviPipeConnection implements CiviClientInterface {
   public function start(): PromiseInterface {
     return $this->pipeConnection->start()
       ->then(function (string $welcomeLine) {
-        $welcome = json_decode($welcomeLine, 1);
-        if (!isset($welcome['Civi::pipe'])) {
-          return reject(new \Exception('Malformed header: ' . $welcomeLine));
+        try {
+          $welcome = JsonRpc::parseWelcome($welcomeLine);
         }
-        if (empty($welcome['Civi::pipe']['v']) || version_compare($welcome['Civi::pipe']['v'], self::MINIMUM_VERSION, '<')) {
-          return reject(new \Exception(sprintf("Expected minimum CiviCRM version %s. Received welcome: %s\n", self::MINIMUM_VERSION, $welcomeLine)));
+        catch (\Exception $e) {
+          return reject($e);
         }
-        $this->welcome = $welcome;
+
         $this->logger->notice('Connected', ['Civi::pipe' => $welcome['Civi::pipe']]);
         return $welcome['Civi::pipe'];
       });

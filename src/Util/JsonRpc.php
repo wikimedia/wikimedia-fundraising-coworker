@@ -10,6 +10,19 @@ use function React\Promise\resolve;
 
 class JsonRpc {
 
+  const MINIMUM_VERSION = '5.47.alpha1';
+
+  public static function parseWelcome(string $welcomeLine): array {
+    $welcome = json_decode($welcomeLine, 1);
+    if (!isset($welcome['Civi::pipe'])) {
+      throw new \Exception('Malformed header: ' . $welcomeLine);
+    }
+    if (empty($welcome['Civi::pipe']['v']) || version_compare($welcome['Civi::pipe']['v'], self::MINIMUM_VERSION, '<')) {
+      throw new \Exception(sprintf("Expected minimum CiviCRM version %s. Received welcome: %s\n", self::MINIMUM_VERSION, $welcomeLine));
+    }
+    return $welcome;
+  }
+
   public static function createRequest(string $method, array $params = [], $id = NULL): string {
     return json_encode(['jsonrpc' => '2.0', 'method' => $method, 'params' => $params, 'id' => $id]);
   }
