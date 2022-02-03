@@ -37,7 +37,7 @@ class CiviPipeClient implements CiviPipeClientInterface {
     $this->logger = $logger ?: new Logger(static::CLASS);
   }
 
-  use CiviJsonRpcClientTrait;
+  use CiviPipeClientTrait;
 
   /**
    * @return \React\Promise\PromiseInterface

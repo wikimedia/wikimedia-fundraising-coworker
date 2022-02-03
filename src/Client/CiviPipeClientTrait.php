@@ -6,7 +6,10 @@ use Civi\Coworker\Util\IdUtil;
 use Civi\Coworker\Util\JsonRpc;
 use React\Promise\PromiseInterface;
 
-trait CiviJsonRpcClientTrait {
+/**
+ * @see CiviPipeClientInterface
+ */
+trait CiviPipeClientTrait {
 
   /**
    * Send a line of JSON. Receive a line of JSON.
