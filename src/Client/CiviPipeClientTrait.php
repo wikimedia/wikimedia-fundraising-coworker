@@ -12,6 +12,17 @@ use React\Promise\PromiseInterface;
 trait CiviPipeClientTrait {
 
   /**
+   * Maximum request ID.
+   *
+   * JSON-RPC requires attaching an ID to every request. We don't really use this ID, but we will
+   * send a lot of requests over time, and eventually we need to loopback. TBH, you could probably
+   * get away with setting this to 1, but maybe it's handy for debugging to have IDs more spread out.
+   *
+   * @var int
+   */
+  private static $maxRequestId = 1000 * 1000;
+
+  /**
    * Send a line of JSON. Receive a line of JSON.
    *
    * @param string $requestLine
@@ -21,7 +32,7 @@ trait CiviPipeClientTrait {
   abstract protected function sendJsonRpc(string $requestLine): PromiseInterface;
 
   public function request(string $method, array $params = [], ?string $caller = NULL): PromiseInterface {
-    $id = IdUtil::next(__CLASS__ . '::request');
+    $id = IdUtil::next(__CLASS__ . '::request', static::$maxRequestId);
 
     $requestLine = JsonRpc::createRequest($method, $params, $id);
     $request = ['method' => $method, 'params' => $params, 'caller' => $caller];
