@@ -162,12 +162,23 @@ class CiviQueueWatcher {
           return resolve();
         }
 
-        $this->logger->debug('Run queue ({name}) item', ['name' => $queueName, 'items' => $items]);
-        fprintf(STDERR, "FIXME: Run %s via PipePool\n", json_encode($items));
-        // FIXME: dispatch to PipePool not to ctl
+        $this->logger->info('Run queue ({name}) item', ['name' => $queueName, 'items' => $items]);
+        $this->logger->warning('FIXME: Run via PipePool');
         return $this->ctl->api4('Queue', 'runItems', [
           'items' => $items,
-        ]);
+        ])
+          ->then(
+            function($results) {
+              foreach ($results as $result) {
+                switch ($result['outcome']) {
+                  case 'fail':
+                  case 'retry':
+                    $this->logger->warning('({queue}#{id}) returned "{outcome}"', $result['item'] + ['outcome' => $result['outcome']]);
+                    break;
+                }
+              }
+            }
+          );
       });
   }
 
