@@ -154,7 +154,7 @@ class CiviQueueWatcher {
     $this->logger->debug('Poll queue ({name})', ['name' => $queueName]);
     $item = NULL;
     return $this->ctl
-      ->api4('Queue', 'claimItem', ['queue' => $queueName])
+      ->api4('Queue', 'claimItems', ['queue' => $queueName, 'select' => ['id', 'queue']])
       ->then(function ($items) use ($queueName, &$item) {
         // claimItem is specified to return 0 or 1 items.
         if (empty($items)) {
@@ -162,12 +162,11 @@ class CiviQueueWatcher {
           return resolve();
         }
 
-        $item = array_shift($items);
-        $this->logger->debug('Run queue ({name}) item', ['name' => $queueName, 'item' => $item]);
-        fprintf(STDERR, "FIXME: Run %s via PipePool\n", json_encode($item));
+        $this->logger->debug('Run queue ({name}) item', ['name' => $queueName, 'items' => $items]);
+        fprintf(STDERR, "FIXME: Run %s via PipePool\n", json_encode($items));
         // FIXME: dispatch to PipePool not to ctl
-        return $this->ctl->api4('Queue', 'runItem', [
-          'item' => $item,
+        return $this->ctl->api4('Queue', 'runItems', [
+          'items' => $items,
         ]);
       });
   }
