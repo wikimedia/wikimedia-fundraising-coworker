@@ -2,6 +2,7 @@
 
 namespace Civi\Coworker\Command;
 
+use Bramus\Monolog\Formatter\ColoredLineFormatter;
 use Civi\Coworker\Configuration;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Formatter\LineFormatter;
@@ -80,11 +81,9 @@ trait ConfigurationTrait {
   protected function createLogger(InputInterface $input, OutputInterface $output, Configuration $config): Logger {
     $log = new \Monolog\Logger($this->getName());
 
-    $formatter = $config->logFormat === 'json' ? new JsonFormatter() : new LineFormatter();
-
     if ($config->logFile) {
       $fileHandler = new StreamHandler($config->logFile, $config->logLevel);
-      $fileHandler->setFormatter($formatter);
+      $fileHandler->setFormatter($config->logFormat === 'json' ? new JsonFormatter() : new LineFormatter());
       $log->pushHandler($fileHandler);
     }
 
@@ -106,8 +105,18 @@ trait ConfigurationTrait {
         }
 
       };
+
+      if ($config->logFormat === 'json') {
+        $consoleFormatter = new JsonFormatter();
+      }
+      else {
+        $consoleFormatter = new ColoredLineFormatter(NULL, '[%datetime%] %channel%.%level_name%: %message%');
+        $consoleFormatter->ignoreEmptyContextAndExtra();
+        $consoleFormatter->allowInlineLineBreaks();
+      }
+
       // $consoleHandler = new StreamHandler(STDERR, $config->logLevel);
-      $consoleHandler->setFormatter($formatter);
+      $consoleHandler->setFormatter($consoleFormatter);
       $log->pushHandler($consoleHandler);
     }
 
