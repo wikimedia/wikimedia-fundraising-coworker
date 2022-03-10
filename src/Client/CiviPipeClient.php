@@ -32,7 +32,7 @@ class CiviPipeClient implements CiviPipeClientInterface {
    * @param \Civi\Coworker\PipeConnection $pipeConnection
    * @param \Monolog\Logger|NULL $logger
    */
-  public function __construct($pipeConnection, ?\Monolog\Logger $logger) {
+  public function __construct($pipeConnection, ?\Monolog\Logger $logger = NULL) {
     $this->pipeConnection = $pipeConnection;
     $this->logger = $logger ?: new Logger(static::CLASS);
   }
@@ -54,6 +54,7 @@ class CiviPipeClient implements CiviPipeClientInterface {
           return reject($e);
         }
 
+        $this->welcome = $welcome['Civi::pipe'];
         $this->logger->notice('Connected', ['Civi::pipe' => $welcome['Civi::pipe']]);
         return $welcome['Civi::pipe'];
       });
