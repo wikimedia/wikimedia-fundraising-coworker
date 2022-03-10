@@ -36,6 +36,27 @@ class PromiseUtil {
     }
   }
 
+  /**
+   * Adapter that takes an event-emitter and converts it into a promise.
+   *
+   * Compare:
+   *   - $foo->on('stop', $callable);
+   *   - PromiseUtil::on($foo, 'stop')->then($callable);
+   *
+   * The promise will only run once (for the next invocation of the event).
+   *
+   * @param $eventEmitter
+   * @param string $event
+   * @return \React\Promise\PromiseInterface
+   */
+  public static function on($eventEmitter, string $event): PromiseInterface {
+    $waitForEvent = new Deferred();
+    $eventEmitter->once($event, function(...$args) use ($waitForEvent) {
+      $waitForEvent->resolve($args);
+    });
+    return $waitForEvent->promise();
+  }
+
   public static function dump(string $message = ''): array {
     return [
       function ($response) use ($message) {
