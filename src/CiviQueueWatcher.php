@@ -163,11 +163,10 @@ class CiviQueueWatcher {
         }
 
         $this->logger->info('Claimed queue item(s): {items}', ['items' => $items]);
-        $this->logger->warning('FIXME: Run via PipePool');
-        // $client = new CiviPoolClient($this->pipePool, 'fixme_context', $this->logger->withName('CiviPool[FIXME]'));
-        // return $client->api4('Queue', 'runItems', [
-        return $this->ctl->api4('Queue', 'runItems', [
+        $client = new Client\CiviPoolClient($this->pipePool, 'fixme_context', $this->logger->withName('CiviPool[FIXME]'));
+        return $client->api4('Queue', 'runItems', [
           'items' => $items,
+          'checkPermissions' => FALSE,
         ])
           ->then(
             function($results) {
