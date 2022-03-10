@@ -49,7 +49,7 @@ class PipePool {
    */
   private $log;
 
-  public function __construct(Configuration $configuration, ?Logger $log) {
+  public function __construct(Configuration $configuration, ?Logger $log = NULL) {
     $this->id = IdUtil::next(__CLASS__);
     $this->configuration = $configuration;
     $this->log = $log ?: new Logger('PipePool_' . $this->id);
@@ -241,8 +241,9 @@ class PipePool {
   private function addConnection(string $context): PromiseInterface {
     $connection = new PipeConnection($this->configuration, $context, $this->log);
     $this->connections[$connection->id] = $connection;
+    $this->log->debug('Starting connection #{id}', ['id' => $connection->id]);
     return $connection->start()->then(function($welcome) use ($connection) {
-      $this->log->debug('Started connection', ['welcome' => $welcome]);
+      $this->log->debug('Started connection  #{id}', ['id' => $connection->id, 'welcome' => $welcome]);
       return $connection;
     });
   }
