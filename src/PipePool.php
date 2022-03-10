@@ -49,10 +49,10 @@ class PipePool {
    */
   private $log;
 
-  public function __construct(Configuration $configuration, Logger $log) {
+  public function __construct(Configuration $configuration, ?Logger $log) {
     $this->id = IdUtil::next(__CLASS__);
     $this->configuration = $configuration;
-    $this->log = $log ? $log->withName('PipePool_' . $this->id) : new Logger('PipePool_' . $this->id);
+    $this->log = $log ?: new Logger('PipePool_' . $this->id);
   }
 
   /**
