@@ -6,14 +6,13 @@ use Civi\Coworker\Client\CiviPipeClient;
 use Civi\Coworker\CiviQueueWatcher;
 use Civi\Coworker\PipeConnection;
 use Civi\Coworker\PipePool;
+use Civi\Coworker\Util\PromiseUtil;
 use React\EventLoop\Loop;
-use React\Promise\Deferred;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function Clue\React\Block\await;
-use function React\Promise\reject;
 
 class RunCommand extends Command {
 
@@ -71,44 +70,34 @@ class RunCommand extends Command {
 
     $ctl = new CiviPipeClient(
       new PipeConnection($config, 'ctl', $this->logger->withName('CtlPipe')),
-      $this->logger->withName('CtlConn'));
-    $work = new PipePool($config, $this->logger->withName('WorkPool'));
-
-    await($ctl->start()
-      // ->then(...PromiseUtil::dump())
-      ->then(function (array $welcome) use ($ctl) {
-        if (($welcome['t'] ?? NULL) === 'trusted') {
-          // OK, we can execute Queue APIs.
-          return $ctl->options(['apiCheckPermissions' => FALSE]);
-        }
-        else {
-          return reject(new \Exception("coworker requires trusted connection"));
-          // Alternatively, if $header['l']==='login' and you have login-credentials,
-          // then perform a login.
-        }
-      })
-      // ->then(...PromiseUtil::dump())
-      ->then(function() use ($work) {
-          return $work->start();
-      })
-      ->then(function () use ($ctl, $config, $work) {
-        $waitForStop = new Deferred();
-        $watcher = new CiviQueueWatcher($config, $ctl, $work, $this->logger->withName('CiviQueueWatcher'));
-        $watcher->on('stop', function() use ($waitForStop) {
-          $this->logger->info('Stopped');
-          $waitForStop->resolve();
-        });
-        $watcher->start()->then(function() use ($config, $watcher) {
-          if (!empty($config->maxTotalDuration)) {
-            Loop::addTimer($config->maxTotalDuration, function() use ($watcher) {
-              $watcher->stop();
-            });
-          }
-        });
-
-        return $waitForStop->promise();
-      })
+      $this->logger->withName('CtlConn')
     );
+    $welcome = await($ctl->start());
+
+    if (($welcome['t'] ?? NULL) === 'trusted') {
+      await($ctl->options(['apiCheckPermissions' => FALSE]));
+    }
+    else {
+      throw new \Exception("coworker requires trusted connection");
+      // Future: Alternatively, if $header['l']==='login' and you have login-credentials,
+      // then perform a login.
+    }
+
+    $workPool = new PipePool($config, $this->logger->withName('WorkPool'));
+    await($workPool->start());
+
+    $watcher = new CiviQueueWatcher($config, $ctl, $workPool, $this->logger->withName('CiviQueueWatcher'));
+    $onStop = PromiseUtil::on($watcher, 'stop');
+
+    $watcher->start()->then(function() use ($config, $watcher) {
+      if (!empty($config->maxTotalDuration)) {
+        Loop::addTimer($config->maxTotalDuration, function() use ($watcher) {
+          $watcher->stop();
+        });
+      }
+    });
+
+    await($onStop);
   }
 
   protected function pickChannels(InputInterface $input, OutputInterface $output): array {
