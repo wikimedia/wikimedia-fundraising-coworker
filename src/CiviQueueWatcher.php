@@ -2,7 +2,7 @@
 
 namespace Civi\Coworker;
 
-use Civi\Coworker\Client\CiviPipeClient;
+use Civi\Coworker\Client\CiviClientInterface;
 use Evenement\EventEmitterTrait;
 use React\EventLoop\Loop;
 use React\Promise\Deferred;
@@ -46,7 +46,7 @@ class CiviQueueWatcher {
    * FIXME: Shouldn't we be restrting the ctl connection periodically?
    * Maybe it should build on a PipePool of maxConcurrentWorkers=1?
    *
-   * @var \Civi\Coworker\Client\CiviPipeClient
+   * @var \Civi\Coworker\Client\CiviClientInterface
    */
   protected $ctl;
 
@@ -77,11 +77,11 @@ class CiviQueueWatcher {
 
   /**
    * @param \Civi\Coworker\Configuration $config
-   * @param \Civi\Coworker\Client\CiviPipeClient $ctl
+   * @param \Civi\Coworker\Client\CiviClientInterface $ctl
    * @param \Civi\Coworker\PipePool $pipePool
    * @param \Monolog\Logger $logger
    */
-  public function __construct(Configuration $config, CiviPipeClient $ctl, PipePool $pipePool, \Monolog\Logger $logger) {
+  public function __construct(Configuration $config, CiviClientInterface $ctl, PipePool $pipePool, \Monolog\Logger $logger) {
     $this->config = $config;
     $this->ctl = $ctl;
     $this->pipePool = $pipePool;
@@ -162,8 +162,10 @@ class CiviQueueWatcher {
           return resolve();
         }
 
-        $this->logger->info('Run queue ({name}) item', ['name' => $queueName, 'items' => $items]);
+        $this->logger->info('Claimed queue item(s): {items}', ['items' => $items]);
         $this->logger->warning('FIXME: Run via PipePool');
+        // $client = new CiviPoolClient($this->pipePool, 'fixme_context', $this->logger->withName('CiviPool[FIXME]'));
+        // return $client->api4('Queue', 'runItems', [
         return $this->ctl->api4('Queue', 'runItems', [
           'items' => $items,
         ])
