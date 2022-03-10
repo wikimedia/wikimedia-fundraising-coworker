@@ -4,7 +4,11 @@ namespace Civi\Coworker\Client;
 
 use React\Promise\PromiseInterface;
 
-interface CiviPipeClientInterface extends CiviClientInterface {
+/**
+ * A client should implement this interface it supports a persistent session.
+ * It defines common methods for working with a session.
+ */
+interface CiviSessionInterface {
 
   /**
    * Set the current user.

@@ -7,7 +7,8 @@ use Civi\Coworker\Util\JsonRpc;
 use React\Promise\PromiseInterface;
 
 /**
- * @see CiviPipeClientInterface
+ * @see \Civi\Coworker\Client\CiviClientInterface
+ * @see \Civi\Coworker\Client\CiviSessionInterface
  */
 trait CiviPipeClientTrait {
 

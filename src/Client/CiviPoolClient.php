@@ -5,7 +5,7 @@ namespace Civi\Coworker\Client;
 use Monolog\Logger;
 use React\Promise\PromiseInterface;
 
-class CiviPoolClient implements CiviClientInterface {
+class CiviPoolClient implements CiviClientInterface, CiviSessionInterface {
 
   use CiviPipeClientTrait;
 
