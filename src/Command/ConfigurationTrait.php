@@ -101,7 +101,7 @@ trait ConfigurationTrait {
         }
 
         protected function write(array $record): void {
-          $this->output->writeln($record['formatted']);
+          $this->output->write($record['formatted']);
         }
 
       };
