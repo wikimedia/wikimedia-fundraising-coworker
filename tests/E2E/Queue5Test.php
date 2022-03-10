@@ -29,11 +29,11 @@ class Queue5Test extends TestCase {
   }
 
   public function testQueue() {
-    $this->cvEval('queue_example_reset("qx?bg");');
-    $this->cvEval('queue_example_addlogme("qx?bg", range(1,5));');
+    $this->cvEval('queue_example_reset();');
+    $this->cvEval('queue_example_fill("a", range(1,5));');
     $this->execute('run', [
       '--pipe' => $this->cvCmd('ev "Civi::pipe();"'),
-      '--define' => ['maxTotalDuration=5'],
+      '--define' => ['maxTotalDuration=10'],
     ]);
     $lines = $this->parseJsonLines($this->logFile);
     $this->assertCount(5, $lines);
