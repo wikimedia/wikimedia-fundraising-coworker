@@ -69,6 +69,7 @@ class RunCommand extends Command {
     // ]);
 
     $ctl = new CiviPipeClient(
+      $config,
       new PipeConnection($config, 'ctl', $this->logger->withName('CtlPipe')),
       $this->logger->withName('CtlConn')
     );

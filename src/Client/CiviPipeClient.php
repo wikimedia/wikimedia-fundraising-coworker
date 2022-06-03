@@ -2,6 +2,7 @@
 
 namespace Civi\Coworker\Client;
 
+use Civi\Coworker\Configuration;
 use Civi\Coworker\Util\JsonRpc;
 use Monolog\Logger;
 use React\Promise\PromiseInterface;
@@ -12,6 +13,11 @@ use function React\Promise\reject;
  * requests.
  */
 class CiviPipeClient implements CiviClientInterface {
+
+  /**
+   * @var \Civi\Coworker\Configuration
+   */
+  protected $config;
 
   /**
    * @var \Civi\Coworker\PipeConnection
@@ -29,10 +35,12 @@ class CiviPipeClient implements CiviClientInterface {
   protected $welcome;
 
   /**
+   * @param \Civi\Coworker\Configuration $config
    * @param \Civi\Coworker\PipeConnection $pipeConnection
    * @param \Monolog\Logger|NULL $logger
    */
-  public function __construct($pipeConnection, ?\Monolog\Logger $logger = NULL) {
+  public function __construct(Configuration $config, $pipeConnection, ?\Monolog\Logger $logger = NULL) {
+    $this->config = $config;
     $this->pipeConnection = $pipeConnection;
     $this->logger = $logger ?: new Logger(static::CLASS);
   }
@@ -48,7 +56,7 @@ class CiviPipeClient implements CiviClientInterface {
     return $this->pipeConnection->start()
       ->then(function (string $welcomeLine) {
         try {
-          $welcome = JsonRpc::parseWelcome($welcomeLine);
+          $welcome = JsonRpc::parseWelcome($welcomeLine, $this->config->minimumCivicrmVersion);
         }
         catch (\Exception $e) {
           return reject($e);

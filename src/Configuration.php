@@ -5,6 +5,14 @@ namespace Civi\Coworker;
 class Configuration {
 
   /**
+   * Only if the local CiviCRM deployment meets this minimum requirement.
+   * @var string
+   *   Ex: '5.47.alpha1' for current Pipe/JSON-RPC format
+   *   Ex: '5.51.alpha1' for current Queue API
+   */
+  public $minimumCivicrmVersion = '5.51.alpha1';
+
+  /**
    * Maximum number of workers that may be running at the same time.
    *
    * @var int

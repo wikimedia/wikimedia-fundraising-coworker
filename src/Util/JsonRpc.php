@@ -10,15 +10,13 @@ use function React\Promise\resolve;
 
 class JsonRpc {
 
-  const MINIMUM_VERSION = '5.47.alpha1';
-
-  public static function parseWelcome(string $welcomeLine): array {
+  public static function parseWelcome(string $welcomeLine, string $minimumVersion): array {
     $welcome = json_decode($welcomeLine, 1);
     if (!isset($welcome['Civi::pipe'])) {
       throw new \Exception('Malformed header: ' . $welcomeLine);
     }
-    if (empty($welcome['Civi::pipe']['v']) || version_compare($welcome['Civi::pipe']['v'], self::MINIMUM_VERSION, '<')) {
-      throw new \Exception(sprintf("Expected minimum CiviCRM version %s. Received welcome: %s\n", self::MINIMUM_VERSION, $welcomeLine));
+    if (empty($welcome['Civi::pipe']['v']) || version_compare($welcome['Civi::pipe']['v'], $minimumVersion, '<')) {
+      throw new \Exception(sprintf("Expected minimum CiviCRM version %s. Received welcome: %s\n", $minimumVersion, $welcomeLine));
     }
     return $welcome;
   }
