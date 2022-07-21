@@ -57,7 +57,7 @@ Download `coworker` as an add-on for your existing `composer` (D8+) project:
 Download `coworker` for patching or development:
 
 ```
-git clone https://FIXME/coworker.git
+git clone https://lab.civicrm.org/dev/coworker.git
 cd coworker
 composer install
 ```
