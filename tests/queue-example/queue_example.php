@@ -16,6 +16,7 @@ function queue_example_fill(string $name, array $logValues): void {
   $queue = Civi::queue(QUEUE_EXAMPLE_PREFIX . $name, [
     'type' => 'SqlParallel',
     'runner' => 'task',
+    'error' => 'delete',
   ]);
   foreach ($logValues as $logValue) {
     $queue->createItem(new CRM_Queue_Task('queue_example_logme', [$logValue]));
