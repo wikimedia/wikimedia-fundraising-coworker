@@ -12,6 +12,6 @@
     ],
     "git-version": "package_version",
     "main": "bin/coworker",
-    "output": "bin/coworker.phar",
+    "output": "dist/coworker.phar",
     "stub": true
 }
