@@ -30,7 +30,7 @@ There are other paradigms for background processing in CiviCRM. `coworker` is di
 Download `coworker` as a system-wide utility:
 
 ```
-sudo wget 'https://FIXME/coworker.phar' -O '/usr/local/bin/coworker'
+sudo wget 'https://download.civicrm.org/coworker/coworker.phar' -O '/usr/local/bin/coworker'
 sudo chmod +x /usr/local/bin/coworker
 ```
 
