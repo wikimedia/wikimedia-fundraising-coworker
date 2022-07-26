@@ -20,7 +20,6 @@
     "require": {
         "php": "~7.2 || ~8.0",
         "ext-json": "*",
-        "civicrm/composer-downloads-plugin": "~2.1|^3",
         "react/http": "^1.5",
         "react/child-process": "^0.6.4",
         "react/promise": "^2.8",
@@ -29,15 +28,5 @@
         "clue/block-react": "^1.5",
         "clue/mq-react": "~1.4.0",
         "bramus/monolog-colored-line-formatter": "~3.0"
-    },
-    "extra": {
-        "downloads": {
-            "box": {
-                "version": "3.8.4",
-                "url": "https://github.com/humbug/box/releases/download/{$version}/box.phar",
-                "path": "bin/{$id}",
-                "type": "phar"
-            }
-        }
     }
 }

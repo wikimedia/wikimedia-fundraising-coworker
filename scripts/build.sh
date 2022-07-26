@@ -8,14 +8,17 @@ function absdirname() {
   popd >> /dev/null
 }
 
-SCRDIR=$(absdirname "$0")
-PRJDIR=$(dirname "$SCRDIR")
-export PATH="$PRJDIR/bin:$PATH"
-
+SCRIPTDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$SCRIPTDIR")
 set -ex
 
+BOX_VERSION=3.16.0
+BOX_URL="https://github.com/humbug/box/releases/download/${BOX_VERSION}/box.phar"
+BOX_DIR="$PRJDIR/extern/box-$BOX_VERSION"
+BOX_BIN="$BOX_DIR/box"
+[ ! -f "$BOX_BIN" ] && ( mkdir -p "$BOX_DIR" ; curl -L "$BOX_URL" -o "$BOX_BIN" ; chmod +x "$BOX_BIN" )
+
 pushd "$PRJDIR" >> /dev/null
-  composer install --prefer-dist --no-progress --no-suggest --no-dev
-  which box
-  php -d phar.read_only=0 `which box` build -v
+  composer install --prefer-dist --no-progress --no-suggest --no-dev --no-interaction
+  php -d phar.read_only=0 "$BOX_BIN" build -v
 popd >> /dev/null
