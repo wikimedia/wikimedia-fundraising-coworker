@@ -34,7 +34,7 @@ if (PHP_SAPI !== 'cli') {
 
 send([
   'Civi::pipe' => [
-    'v' => '5.47.alpha1',
+    'v' => '5.51.alpha1',
     't' => 'trusted',
     'd' => $PROG,
   ],
