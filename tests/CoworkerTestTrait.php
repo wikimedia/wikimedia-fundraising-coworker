@@ -21,7 +21,7 @@ trait CoworkerTestTrait {
     $copyIfNew(__DIR__ . '/queue-example/info.xml', "$myExtDir/info.xml");
     $copyIfNew(__DIR__ . '/queue-example/queue_example.php', "$myExtDir/queue_example.php");
 
-    $this->cv('en queue_example');
+    $this->cv('en authx queue_example');
   }
 
   /**
