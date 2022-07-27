@@ -181,6 +181,12 @@ Tests are organized into two groups:
 
 (Note: `CV_TEST_BUILD` is required for E2E tests, and it is ignored by unit tests.)
 
+# Publication
+
+* New builds of `master` are published automatically by https://test.civicrm.org/view/Tools/job/Tool-Publish-coworker/ 
+* The most recent successful build is `https://download.civicrm.org/coworker/coworker.phar`
+* Historical builds for specific revisions are also available (eg `https://download.civicrm.org/coworker/coworker.phar-v0.1`; *naming per `git describe --tags`*)
+
 # Known limitations
 
 * If you are adding `coworker` into an existing `composer` project (eg Drupal 8+), it is conceivable to download via
