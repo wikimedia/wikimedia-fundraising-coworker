@@ -64,8 +64,13 @@ trait CoworkerTestTrait {
     return $result;
   }
 
-  protected function cvEval(string $phpCode): string {
-    return $this->cv('ev ' . escapeshellarg($phpCode));
+  protected function cvEval(string $phpCode, ?string $user = NULL): string {
+    $cmd = 'ev ';
+    if ($user !== NULL) {
+      $cmd .= '--user=' . escapeshellarg($user) . ' ';
+    }
+    $cmd .= escapeshellarg($phpCode);
+    return $this->cv($cmd);
   }
 
   /**
@@ -78,6 +83,16 @@ trait CoworkerTestTrait {
     $this->assertTrue(is_dir($cvRoot), "CV_TEST_BUILD ($cvRoot) should be a valid root");
     $cvCmd = sprintf('cv --cwd=%s %s', escapeshellarg($cvRoot), $cmd);
     return $cvCmd;
+  }
+
+  protected function findUserCid(string $username): int {
+    $val = trim($this->cvEval('echo CRM_Core_Session::getLoggedInContactID();', $username));
+    if ($val && is_numeric($val)) {
+      return (int) $val;
+    }
+    else {
+      throw new \RuntimeException("Expected contact id for $username. Received: $val");
+    }
   }
 
 }
