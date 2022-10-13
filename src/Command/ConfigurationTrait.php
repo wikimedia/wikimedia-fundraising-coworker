@@ -78,6 +78,9 @@ trait ConfigurationTrait {
     return $cfg;
   }
 
+  /**
+   * @return \Monolog\Logger
+   */
   protected function createLogger(InputInterface $input, OutputInterface $output, Configuration $config): Logger {
     $log = new \Monolog\Logger($this->getName());
 
