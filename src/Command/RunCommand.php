@@ -65,6 +65,8 @@ class RunCommand extends Command {
     $runtime->config = $this->createConfiguration($input, $output);
     $runtime->logger = $this->createLogger($input, $output, $runtime->config);
 
+    $runtime->logger->debug('Configuration: {c}', ['c' => (array) $runtime->config]);
+
     // [$ctlChannel, $workChannel] = $this->pickChannels($input, $output);
     // $logger->info('Setup channels (control={ctl}, work={work})', [
     //   'ctl' => $ctlChannel,

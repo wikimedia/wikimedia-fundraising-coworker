@@ -25,9 +25,16 @@ trait ConfigurationTrait {
   protected function createConfiguration(InputInterface $input, OutputInterface $output): Configuration {
     // Wouldn't it be nicer to have some attribute/annotation mapping...
 
-    $map = [
+    $optionMap = [
       'pipe' => 'pipeCommand',
       'log' => 'logFile',
+    ];
+    $envMap = [
+      'COWORKER_MAX_WORKERS' => 'maxConcurrentWorkers',
+      'COWORKER_MAX_DURATION' => 'maxTotalDuration',
+      'COWORKER_WORKER_REQUESTS' => 'maxWorkerRequests',
+      'COWORKER_WORKER_DURATION' => 'maxWorkerDuration',
+      'COWORKER_GC_WORKERS' => 'gcWorkers',
     ];
 
     $cfg = new Configuration();
@@ -51,7 +58,14 @@ trait ConfigurationTrait {
       }
     }
 
-    foreach ($map as $inputOption => $cfgOption) {
+    foreach ($envMap as $envVar => $cfgOption) {
+      $envValue = getenv($envVar);
+      if ($envValue !== FALSE) {
+        $cfg->{$cfgOption} = $envValue;
+      }
+    }
+
+    foreach ($optionMap as $inputOption => $cfgOption) {
       $inputValue = $input->getOption($inputOption);
       if ($inputValue !== '') {
         $cfg->{$cfgOption} = $inputValue;
