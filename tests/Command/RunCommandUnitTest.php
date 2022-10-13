@@ -27,6 +27,7 @@ class RunCommandUnitTest extends TestCase {
       ';Starting.*CiviQueueWatcher;',
       ';Poll queues.*CiviQueueWatcher;',
       ';Poll queues.*CiviQueueWatcher;',
+      ';Exceeded duration limit;',
       ';Stopping.*CiviQueueWatcher;',
       ';Stopped;',
     ];

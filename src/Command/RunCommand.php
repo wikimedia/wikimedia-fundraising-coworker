@@ -93,7 +93,12 @@ class RunCommand extends Command {
       $config = $runtime->config();
       if (!empty($config->maxTotalDuration)) {
         Loop::addTimer($config->maxTotalDuration, function() use ($watcher) {
-          $watcher->stop();
+          Runtime::get()->logger()->info('Exceeded duration limit ({sec} seconds).', [
+            'sec' => Runtime::get()->config()->maxTotalDuration,
+          ]);
+          $watcher->stop()->then(function() {
+            Runtime::get()->logger()->info('Stopped');
+          });
         });
       }
     });
