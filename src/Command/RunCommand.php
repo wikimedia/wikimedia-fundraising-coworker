@@ -78,7 +78,7 @@ class RunCommand extends Command {
       await($ctl->options(['apiCheckPermissions' => FALSE]));
     }
     else {
-      throw new \Exception("coworker requires trusted connection");
+      throw new \Exception('coworker requires a trusted control channel');
       // Future: Alternatively, if $header['l']==='login' and you have login-credentials,
       // then perform a login.
     }
