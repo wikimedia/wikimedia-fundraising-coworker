@@ -1,6 +1,7 @@
 <?php
 namespace Civi\Coworker;
 
+use Civi\Coworker\Util\JsonLines;
 use React\Promise\PromiseInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -92,6 +93,23 @@ trait CoworkerTestTrait {
     }
     else {
       throw new \RuntimeException("Expected contact id for $username. Received: $val");
+    }
+  }
+
+  /**
+   * Assert that the 'queue_example' log file contains certain data.
+   *
+   * @param string $jsonLogFile
+   * @param array $expected
+   *   Ex: [0 => ['d' => EXPECT_DATA, 'u' => EXPECT_USER, 'd' => EXPECT_DOMAIN]]
+   */
+  protected function assertExampleJsonOutput(string $jsonLogFile, array $expected): void {
+    $actualLines = JsonLines::parseFile($jsonLogFile);
+    $this->assertEquals(count($expected), count($actualLines));
+    foreach (array_keys($actualLines) as $offset) {
+      $this->assertEquals($expected[$offset]['d'], $actualLines[$offset]['d'], "Line $offset has unexpected domain ID");
+      $this->assertEquals($expected[$offset]['u'], $actualLines[$offset]['u'], "Line $offset has unexpected user ID");
+      $this->assertEquals($expected[$offset]['v'], $actualLines[$offset]['v'], "Line $offset has unexpected value");
     }
   }
 
