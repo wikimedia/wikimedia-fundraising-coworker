@@ -3,6 +3,7 @@
 namespace Civi\Coworker\E2E;
 
 use Civi\Coworker\CoworkerTestTrait;
+use Civi\Coworker\Util\JsonLines;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -35,19 +36,8 @@ class Queue5Test extends TestCase {
       '--pipe' => $this->cvCmd('ev "Civi::pipe();"'),
       '--define' => ['maxTotalDuration=10'],
     ]);
-    $lines = $this->parseJsonLines($this->logFile);
+    $lines = JsonLines::parseFile($this->logFile);
     $this->assertCount(5, $lines);
-  }
-
-  protected function parseJsonLines(string $file): array {
-    $content = rtrim(file_get_contents($file), "\r\n");
-    $lines = explode("\n", $content);
-    return ($content === '') ? [] : array_map(
-      function($line) {
-        return \json_decode($line, 1);
-      },
-      $lines
-    );
   }
 
 }
