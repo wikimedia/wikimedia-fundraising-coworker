@@ -3,10 +3,12 @@
 namespace Civi\Coworker;
 
 use Civi\Coworker\Client\CiviClientInterface;
+use Civi\Coworker\Util\TaskSplitter;
 use Evenement\EventEmitterTrait;
 use React\EventLoop\Loop;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
+use function React\Promise\all;
 use function React\Promise\resolve;
 
 /**
@@ -154,33 +156,43 @@ class CiviQueueWatcher {
     $this->logger->debug('Poll queue ({name})', ['name' => $queueName]);
     $item = NULL;
     return $this->ctl
-      ->api4('Queue', 'claimItems', ['queue' => $queueName, 'select' => ['id', 'queue']])
-      ->then(function ($items) use ($queueName, &$item) {
+      ->api4('Queue', 'claimItems', ['queue' => $queueName, 'select' => ['id', 'queue', 'run_as']])
+      ->then(function ($allItems) use ($queueName, &$item) {
         // claimItem is specified to return 0 or 1 items.
-        if (empty($items)) {
+        if (empty($allItems)) {
           $this->logger->debug('Nothing in queue {name}', ['name' => $queueName]);
           return resolve();
         }
 
-        $this->logger->info('Claimed queue item(s): {items}', ['items' => $items]);
-        $client = new Client\CiviPoolClient($this->pipePool, 'fixme_context', $this->logger->withName('CiviPool[FIXME]'));
-        return $client->api4('Queue', 'runItems', [
-          'items' => $items,
-          'checkPermissions' => FALSE,
-        ])
-          ->then(
-            function($results) {
-              foreach ($results as $result) {
-                switch ($result['outcome']) {
-                  case 'fail':
-                  case 'retry':
-                    $this->logger->warning('({queue}#{id}) returned "{outcome}"', $result['item'] + ['outcome' => $result['outcome']]);
-                    break;
-                }
-              }
-            }
-          );
+        $subgroups = TaskSplitter::split($allItems);
+        $promises = [];
+        foreach ($subgroups as $subgroup) {
+          $context = $subgroup['context'];
+          $this->logger->info('Claimed queue item(s) for {context}: {items}', $subgroup);
+          $client = new Client\CiviPoolClient($this->pipePool, $context, $this->logger->withName("CiviPool[$context]"));
+          $promises[$context] = $client->api4('Queue', 'runItems', [
+            'items' => $subgroup['items'],
+            'checkPermissions' => FALSE,
+          ])->then([$this, 'onRunItemResults']);
+        }
+        return all($promises);
       });
+  }
+
+  /**
+   * The `Queue.runItems` returns a list of outcomes. Look at it and log interesting outcomes.
+   *
+   * @param array $results
+   */
+  protected function onRunItemResults(array $results): void {
+    foreach ($results as $result) {
+      switch ($result['outcome']) {
+        case 'fail':
+        case 'retry':
+          $this->logger->warning('({queue}#{id}) returned "{outcome}"', $result['item'] + ['outcome' => $result['outcome']]);
+          break;
+      }
+    }
   }
 
   /**

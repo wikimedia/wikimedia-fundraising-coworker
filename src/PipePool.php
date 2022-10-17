@@ -244,6 +244,7 @@ class PipePool {
     $this->log->debug('Starting connection #{id}', ['id' => $connection->id]);
     return $connection->start()->then(function($welcome) use ($connection) {
       $this->log->debug('Started connection  #{id}', ['id' => $connection->id, 'welcome' => $welcome]);
+      // FIXME: on connect, use $context to login
       return $connection;
     });
   }
