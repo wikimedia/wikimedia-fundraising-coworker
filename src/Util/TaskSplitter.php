@@ -57,7 +57,7 @@ class TaskSplitter {
     };
 
     foreach ($items as $item) {
-      $context = sprintf('c=%s,d=%s', $item['run_as']['contactId'] ?? 'null', $item['run_as']['domainId'] ?? 'null');
+      $context = self::encodeContextName($item['run_as']);
       if ($nextContext !== NULL && $nextContext !== $context) {
         $acceptNext();
       }
@@ -67,6 +67,31 @@ class TaskSplitter {
     $acceptNext();
 
     return $subGroups;
+  }
+
+  /**
+   * @param array $runAs
+   *   Ex: ['contactId' => 100, 'domainId' => 1']
+   * @return string
+   *   Ex: 'd1-c100'
+   */
+  public static function encodeContextName($runAs): string {
+    return sprintf('d%d-c%d', $runAs['domainId'] ?? 'null', $runAs['contactId'] ?? 'null');
+  }
+
+  /**
+   * @param string $context
+   *   Ex: 'd1-c100'
+   * @return array
+   *   Ex: ['contactId' => 100, 'domainId' => 1']
+   */
+  public static function decodeContextName(string $context): array {
+    if (preg_match('/^d(\d+)-c(\d+)$/', $context, $m)) {
+      return [
+        'contactId' => $m[2] === '0' ? NULL : $m[2],
+        'domainId' => $m[1] === '0' ? NULL : $m[1],
+      ];
+    }
   }
 
 }
