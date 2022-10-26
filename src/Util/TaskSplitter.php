@@ -2,6 +2,9 @@
 
 namespace Civi\Coworker\Util;
 
+use Civi\Coworker\PipeConnection;
+use function React\Promise\resolve;
+
 class TaskSplitter {
 
   /**
@@ -67,6 +70,33 @@ class TaskSplitter {
     $acceptNext();
 
     return $subGroups;
+  }
+
+  /**
+   * Whenever a new worker-connection is established, we use its "context" name
+   * to perform some initialization.
+   *
+   * @param \Civi\Coworker\PipeConnection $connection
+   * @param string $context
+   * @return \Civi\Coworker\PipeConnection|\React\Promise\PromiseInterface
+   * @throws \Exception
+   */
+  public static function onConnect(PipeConnection $connection, string $context) {
+    $runAs = self::decodeContextName($context);
+    if (!empty($runAs['contactId'])) {
+      // FIXME: 'login' method does not currently understand 'domainId'
+      $request = JsonRpc::createRequest('login', $runAs);
+      return $connection->run($request)
+        ->then(function($response) {
+          return JsonRpc::parseResponse($response);
+        })
+        ->then(function() use ($connection) {
+          return $connection;
+        });
+    }
+    else {
+      return resolve($connection);
+    }
   }
 
   /**

@@ -9,6 +9,7 @@ use Civi\Coworker\PipeConnection;
 use Civi\Coworker\PipePool;
 use Civi\Coworker\Runtime;
 use Civi\Coworker\Util\PromiseUtil;
+use Civi\Coworker\Util\TaskSplitter;
 use React\EventLoop\Loop;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -161,7 +162,8 @@ class RunCommand extends Command {
   protected function createWorkerPool(Runtime $runtime): PipePool {
     return new PipePool(
       $runtime->config(),
-      $runtime->logger()->withName('WorkPool')
+      $runtime->logger()->withName('WorkPool'),
+      [TaskSplitter::class, 'onConnect']
     );
   }
 

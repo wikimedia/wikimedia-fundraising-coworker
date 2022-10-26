@@ -49,10 +49,20 @@ class PipePool {
    */
   private $log;
 
-  public function __construct(Configuration $configuration, ?Logger $log = NULL) {
+  /**
+   * The "connector" is responsible for applying initialization to any
+   * new connections.
+   *
+   * @var callable
+   *   Function(PipeConnection $connection, string $context): Promise
+   */
+  private $connector;
+
+  public function __construct(Configuration $configuration, ?Logger $log = NULL, ?callable $connector = NULL) {
     $this->id = IdUtil::next(__CLASS__);
     $this->configuration = $configuration;
     $this->log = $log ?: new Logger('PipePool_' . $this->id);
+    $this->connector = $connector;
   }
 
   /**
@@ -242,10 +252,17 @@ class PipePool {
     $connection = new PipeConnection($this->configuration, $context, $this->log);
     $this->connections[$connection->id] = $connection;
     $this->log->debug('Starting connection #{id}', ['id' => $connection->id]);
-    return $connection->start()->then(function($welcome) use ($connection) {
-      $this->log->debug('Started connection  #{id}', ['id' => $connection->id, 'welcome' => $welcome]);
-      // FIXME: on connect, use $context to login
-      return $connection;
+    return $connection->start()->then(function($welcome) use ($connection, $context) {
+      if (!$this->connector) {
+        $this->log->debug('Started connection #{id} for #{context}', ['id' => $connection->id, 'welcome' => $welcome, 'context' => $context]);
+        return $connection;
+      }
+      $this->log->debug('Initializing connection #{id} for #{context}', ['id' => $connection->id, 'welcome' => $welcome, 'context' => $context]);
+      return call_user_func($this->connector, $connection, $context)
+        ->then(function() use ($connection, $welcome, $context) {
+          $this->log->debug('Started connection #{id} for #{context}', ['id' => $connection->id, 'welcome' => $welcome, 'context' => $context]);
+          return $connection;
+        });
     });
   }
 
