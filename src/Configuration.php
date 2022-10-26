@@ -78,6 +78,18 @@ class Configuration {
   public $logLevel;
 
   /**
+   * Should we enable polling-related debug info?
+   *
+   * The polling process sends a very large number of requests to the control-channel,
+   * and most of these don't result in anything interesting. By default, we exclude
+   * details about this from the log. However, you may re-enable it if you are
+   * specifically debugging issues with the polling mechanism.
+   *
+   * @var bool
+   */
+  public $logPolling = FALSE;
+
+  /**
    * One of: text|json
    *
    * @var string

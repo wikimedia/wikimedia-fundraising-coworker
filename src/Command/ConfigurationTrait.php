@@ -4,6 +4,7 @@ namespace Civi\Coworker\Command;
 
 use Bramus\Monolog\Formatter\ColoredLineFormatter;
 use Civi\Coworker\Configuration;
+use Civi\Coworker\Util\LogFilter;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\AbstractProcessingHandler;
@@ -85,7 +86,7 @@ trait ConfigurationTrait {
         $cfg->logLevel = 'info';
       }
       else {
-        $cfg->logLevel = 'warning';
+        $cfg->logLevel = 'notice';
       }
     }
 
@@ -99,13 +100,13 @@ trait ConfigurationTrait {
     $log = new \Monolog\Logger($this->getName());
 
     if ($config->logFile) {
-      $fileHandler = new StreamHandler($config->logFile, $config->logLevel);
+      $fileHandler = new StreamHandler($config->logFile);
       $fileHandler->setFormatter($config->logFormat === 'json' ? new JsonFormatter() : new LineFormatter());
-      $log->pushHandler($fileHandler);
+      $log->pushHandler(new LogFilter($config, $fileHandler));
     }
 
     if ($output->isVerbose() || !$config->logFile) {
-      $consoleHandler = new class($output, $config->logLevel) extends AbstractProcessingHandler {
+      $consoleHandler = new class($output) extends AbstractProcessingHandler {
 
         /**
          * @var \Symfony\Component\Console\Output\OutputInterface
@@ -134,7 +135,7 @@ trait ConfigurationTrait {
 
       // $consoleHandler = new StreamHandler(STDERR, $config->logLevel);
       $consoleHandler->setFormatter($consoleFormatter);
-      $log->pushHandler($consoleHandler);
+      $log->pushHandler(new LogFilter($config, $consoleHandler));
     }
 
     $log->pushProcessor(new \Monolog\Processor\PsrLogMessageProcessor());

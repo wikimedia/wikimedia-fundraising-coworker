@@ -150,7 +150,7 @@ class RunCommand extends Command {
     return new CiviPipeClient(
       $runtime->config(),
       $pipeConnection,
-      $runtime->logger()->withName('CtlConn')
+      $runtime->logger()->withName('CtlClient')
     );
   }
 
@@ -162,7 +162,7 @@ class RunCommand extends Command {
   protected function createWorkerPool(Runtime $runtime): PipePool {
     return new PipePool(
       $runtime->config(),
-      $runtime->logger()->withName('WorkPool'),
+      $runtime->logger()->withName('Pool'),
       [TaskSplitter::class, 'onConnect']
     );
   }
