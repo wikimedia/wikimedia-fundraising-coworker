@@ -105,7 +105,7 @@ trait CoworkerTestTrait {
    */
   protected function assertExampleJsonOutput(string $jsonLogFile, array $expected): void {
     $actualLines = JsonLines::parseFile($jsonLogFile);
-    $this->assertEquals(count($expected), count($actualLines));
+    $this->assertEquals(count($expected), count($actualLines), "Lines:\n" . json_encode($actualLines, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
     foreach (array_keys($actualLines) as $offset) {
       $this->assertEquals($expected[$offset]['d'], $actualLines[$offset]['d'], "Line $offset has unexpected domain ID");
       $this->assertEquals($expected[$offset]['u'], $actualLines[$offset]['u'], "Line $offset has unexpected user ID");
