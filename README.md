@@ -22,7 +22,7 @@ There are other paradigms for background processing in CiviCRM. `coworker` is di
 ## Requirements
 
 * Required: PHP v7.2+
-* Required: CiviCRM (*FIXME: Version number*)
+* Required: CiviCRM 5.51
 * Recommended: `cv`, `drush`, or `wp-cli`
 
 ## Download
@@ -45,7 +45,7 @@ Download `coworker` as an add-on for your existing `composer` (D8+) project:
         "downloads": {
             "coworker": {
                 "version": "F.I.X.M.E",
-                "url": "https://FIXME/coworker-{$version}.phar",
+                "url": "https://download.civicrm.org/coworker/coworker.phar-{$version}.phar",
                 "path": "bin/coworker",
                 "type": "phar"
             }
@@ -204,6 +204,12 @@ If the same value is specified multiple ways, the value will be chosen based on 
 * Environment variable
 * Configuration file
 * Class default
+
+# Publication
+
+* New builds of `master` are published automatically by https://test.civicrm.org/view/Tools/job/Tool-Publish-coworker/ 
+* The most recent successful build is `https://download.civicrm.org/coworker/coworker.phar`
+* Historical builds for specific revisions are also available (eg `https://download.civicrm.org/coworker/coworker.phar-v0.1`; *naming per `git describe --tags`*)
 
 # Known limitations
 
