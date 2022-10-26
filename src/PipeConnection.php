@@ -65,13 +65,13 @@ class PipeConnection {
    */
   protected $log;
 
-  public function __construct(Configuration $configuration, ?string $context = NULL, ?Logger $logger = NULL) {
-    $this->id = IdUtil::next(__CLASS__);
+  public function __construct(Configuration $configuration, string $context, ?Logger $logger = NULL) {
+    $this->id = $context . '#' . IdUtil::next(__CLASS__ . ';' . $context);
     $this->context = $context;
     $this->configuration = $configuration;
     $this->deferred = NULL;
 
-    $name = "Pipe[$context#{$this->id}]";
+    $name = "Pipe[{$this->id}]";
     $this->log = $logger ? $logger->withName($name) : new Logger($name);
     $this->log->pushProcessor(function($rec) {
       $rec['childPid'] = $this->process ? $this->process->getPid() : '?';
@@ -238,7 +238,7 @@ class PipeConnection {
   }
 
   public function toString() {
-    return sprintf('PipeConnection(%s,%s)', $this->id, $this->context);
+    return sprintf('PipeConnection(%s)', $this->id);
   }
 
   /**

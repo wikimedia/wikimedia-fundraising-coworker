@@ -267,11 +267,11 @@ class PipePool {
   }
 
   /**
-   * @param int $connectionId
+   * @param int|string $connectionId
    * @return \React\Promise\PromiseInterface
    *   A promise for the stopped instance of PipeConnection.
    */
-  private function removeConnection(int $connectionId): PromiseInterface {
+  private function removeConnection($connectionId): PromiseInterface {
     $connection = $this->connections[$connectionId];
     unset($this->connections[$connectionId]);
     return $connection->stop()->then(function() use ($connection) {

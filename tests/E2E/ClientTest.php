@@ -104,7 +104,7 @@ class ClientTest extends TestCase {
     $config = new Configuration([
       'pipeCommand' => $this->cvCmd('pipe'),
     ]);
-    $pipe = new PipeConnection($config);
+    $pipe = new PipeConnection($config, 'ClientTest');
     $client = new CiviPipeClient($config, $pipe);
     await($client->start());
     return $client;

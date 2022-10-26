@@ -37,7 +37,7 @@ function main(string $salt = '') {
   $log->pushHandler(new \Monolog\Handler\StreamHandler(STDERR));
   $log->pushProcessor(new \Monolog\Processor\PsrLogMessageProcessor());
 
-  $pipe = new \Civi\Coworker\PipeConnection($cfg, NULL, $log);
+  $pipe = new \Civi\Coworker\PipeConnection($cfg, 'scratch', $log);
   $pipe->start()->then(function($welcome) use ($pipe, $salt) {
     echo "0. Welcomed with \"$welcome\"\n";
     return $pipe->run("first $salt");
