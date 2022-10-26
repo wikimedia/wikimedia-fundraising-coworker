@@ -90,6 +90,16 @@ class Configuration {
   public $logPolling = FALSE;
 
   /**
+   * Should we enable logging for the internal-queue mechanism?
+   *
+   * After claiming a task, it is momentarily placed on an internal-queue while
+   * we find/setup resources for executing the task.
+   *
+   * @var bool
+   */
+  public $logInternalQueue = FALSE;
+
+  /**
    * One of: text|json
    *
    * @var string

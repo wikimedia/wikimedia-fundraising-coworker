@@ -38,7 +38,16 @@ class LogFilter extends HandlerWrapper {
       if ($record['channel'] === 'CtlClient') {
         return FALSE;
       }
-      if ($record['channel'] === 'CiviQueueWatcher' && preg_match('/(Poll queue|Nothing in queue)/', $record['message'])) {
+      if (!empty($record['context']['isPolling'])) {
+        return FALSE;
+      }
+    }
+
+    if (!$this->config->logInternalQueue && $record['level'] <= Logger::DEBUG) {
+      if (preg_match('/^CiviPool\[/', $record['channel'])) {
+        return FALSE;
+      }
+      if (!empty($record['context']['isIntQueue'])) {
         return FALSE;
       }
     }

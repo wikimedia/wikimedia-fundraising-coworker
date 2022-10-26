@@ -104,7 +104,7 @@ class PipePool {
    *   A promise for the response data.
    */
   public function dispatch(string $context, string $requestLine): \React\Promise\PromiseInterface {
-    $this->log->debug("Enqueue ({context}): {requestLine}", ['context' => $context, 'requestLine' => $requestLine]);
+    $this->log->debug("IntQueue: Send to \"{context}\": {requestLine}", ['context' => $context, 'requestLine' => $requestLine, 'isIntQueue' => TRUE]);
     $todo = new Todo($context, $requestLine);
     $this->todos[] = $todo;
     return $todo->deferred->promise();
@@ -129,7 +129,7 @@ class PipePool {
           throw new \RuntimeException('Failed to dequeue expected task.');
         }
         array_shift($this->todos);
-        $this->log->debug("Executing", ['requestLine' => $todo->request]);
+        $this->log->debug('IntQueue: Relaying', ['requestLine' => $todo->request, 'isIntQueue' => TRUE]);
       };
 
       // Re-use existing/idle connection?

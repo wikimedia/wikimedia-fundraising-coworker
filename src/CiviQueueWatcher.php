@@ -133,7 +133,7 @@ class CiviQueueWatcher {
       $this->emit('stop');
       return resolve();
     }
-    $this->logger->debug('Poll queues');
+    $this->logger->debug('Poll queues', ['isPolling' => TRUE]);
     $this->lastFillTime = microtime(1);
     return $this->ctl->api4('Queue', 'get', ['where' => [['runner', 'IS NOT EMPTY'], ['status', '=', 'active']]])
       ->then(function ($queues) {
@@ -153,14 +153,14 @@ class CiviQueueWatcher {
   }
 
   protected function runQueueItem(string $queueName): PromiseInterface {
-    $this->logger->debug('Poll queue ({name})', ['name' => $queueName]);
+    $this->logger->debug('Poll queue ({name})', ['name' => $queueName, 'isPolling' => TRUE]);
     $item = NULL;
     return $this->ctl
       ->api4('Queue', 'claimItems', ['queue' => $queueName, 'select' => ['id', 'queue', 'run_as']])
       ->then(function ($allItems) use ($queueName, &$item) {
         // claimItem is specified to return 0 or 1 items.
         if (empty($allItems)) {
-          $this->logger->debug('Nothing in queue {name}', ['name' => $queueName]);
+          $this->logger->debug('Nothing in queue {name}', ['name' => $queueName, 'isPolling' => TRUE]);
           return resolve();
         }
 
@@ -185,6 +185,7 @@ class CiviQueueWatcher {
    * @param array $results
    */
   protected function onRunItemResults(array $results): void {
+    // TODO: Is this really getting called?
     foreach ($results as $result) {
       switch ($result['outcome']) {
         case 'fail':
