@@ -37,10 +37,10 @@ trait CiviPipeClientTrait {
 
     $requestLine = JsonRpc::createRequest($method, $params, $id);
     $request = ['method' => $method, 'params' => $params, 'caller' => $caller];
-    // $this->logger->debug(sprintf('Send request #%s: %s', $id, $requestLine));
+    $this->logger->debug(sprintf('Send request #%s: %s', $id, $requestLine));
     return $this->sendJsonRpc($requestLine)
       ->then(function(string $responseLine) use ($request, $id) {
-        // $this->logger->debug(sprintf('Receive response #%s: %s', $id, $responseLine));
+        $this->logger->debug(sprintf('Receive response #%s: %s', $id, $responseLine));
         return JsonRpc::parseResponse($responseLine, $id, $request);
       });
   }

@@ -84,6 +84,7 @@ class TaskSplitter {
   public static function onConnect(PipeConnection $connection, string $context) {
     $runAs = self::decodeContextName($context);
     if (!empty($runAs['contactId'])) {
+      $connection->getLog()->info("Authenticate: {runAs}", ['runAs' => $runAs]);
       // FIXME: 'login' method does not currently understand 'domainId'
       $request = JsonRpc::createRequest('login', $runAs);
       return $connection->run($request)
@@ -95,6 +96,7 @@ class TaskSplitter {
         });
     }
     else {
+      $connection->getLog()->info("Authenticate: none (system task)");
       return resolve($connection);
     }
   }

@@ -63,7 +63,7 @@ class CiviPipeClient implements CiviClientInterface {
         }
 
         $this->welcome = $welcome['Civi::pipe'];
-        $this->logger->notice('Connected', ['Civi::pipe' => $welcome['Civi::pipe']]);
+        $this->logger->info('Connected ({welcome})', ['welcome' => $this->welcome]);
         return $welcome['Civi::pipe'];
       });
   }

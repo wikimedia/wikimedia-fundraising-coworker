@@ -168,7 +168,7 @@ class CiviQueueWatcher {
         $promises = [];
         foreach ($subgroups as $subgroup) {
           $context = $subgroup['context'];
-          $this->logger->info('Claimed queue item(s) for {context}: {items}', $subgroup);
+          $this->logger->notice('Claimed queue item(s) for {context}: {items}', $subgroup);
           $client = new Client\CiviPoolClient($this->pipePool, $context, $this->logger->withName("CiviPool[$context]"));
           $promises[$context] = $client->api4('Queue', 'runItems', [
             'items' => $subgroup['items'],

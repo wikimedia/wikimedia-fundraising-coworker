@@ -71,7 +71,8 @@ class PipeConnection {
     $this->configuration = $configuration;
     $this->deferred = NULL;
 
-    $this->log = $logger ? $logger->withName('PipeConnection_' . $this->id) : new Logger('PipeConnection_' . $this->id);
+    $name = "Pipe[$context#{$this->id}]";
+    $this->log = $logger ? $logger->withName($name) : new Logger($name);
     $this->log->pushProcessor(function($rec) {
       $rec['childPid'] = $this->process ? $this->process->getPid() : '?';
       $rec['parentPid'] = posix_getpid();
@@ -194,7 +195,7 @@ class PipeConnection {
       $this->releaseDeferred()->resolve($responseLine);
     }
     else {
-      $this->log->error('Received unexpected response line', ['responseLine' => $responseLine]);
+      $this->log->error('Received unexpected response line: "{responseLine}"', ['responseLine' => $responseLine]);
     }
   }
 
@@ -251,6 +252,13 @@ class PipeConnection {
       $env['SHELL_VERBOSITY'] = 1;
     }
     return $env;
+  }
+
+  /**
+   * @return \Psr\Log\LoggerInterface
+   */
+  public function getLog() {
+    return $this->log;
   }
 
 }
