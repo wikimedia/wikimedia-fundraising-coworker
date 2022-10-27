@@ -65,13 +65,14 @@ class PipeConnection {
    */
   protected $log;
 
-  public function __construct(Configuration $configuration, ?string $context = NULL, ?Logger $logger = NULL) {
-    $this->id = IdUtil::next(__CLASS__);
+  public function __construct(Configuration $configuration, string $context, ?Logger $logger = NULL) {
+    $this->id = $context . '#' . IdUtil::next(__CLASS__ . ';' . $context);
     $this->context = $context;
     $this->configuration = $configuration;
     $this->deferred = NULL;
 
-    $this->log = $logger ? $logger->withName('PipeConnection_' . $this->id) : new Logger('PipeConnection_' . $this->id);
+    $name = "Pipe[{$this->id}]";
+    $this->log = $logger ? $logger->withName($name) : new Logger($name);
     $this->log->pushProcessor(function($rec) {
       $rec['childPid'] = $this->process ? $this->process->getPid() : '?';
       $rec['parentPid'] = posix_getpid();
@@ -194,7 +195,7 @@ class PipeConnection {
       $this->releaseDeferred()->resolve($responseLine);
     }
     else {
-      $this->log->error('Received unexpected response line', ['responseLine' => $responseLine]);
+      $this->log->error('Received unexpected response line: "{responseLine}"', ['responseLine' => $responseLine]);
     }
   }
 
@@ -237,7 +238,7 @@ class PipeConnection {
   }
 
   public function toString() {
-    return sprintf('PipeConnection(%s,%s)', $this->id, $this->context);
+    return sprintf('PipeConnection(%s)', $this->id);
   }
 
   /**
@@ -251,6 +252,13 @@ class PipeConnection {
       $env['SHELL_VERBOSITY'] = 1;
     }
     return $env;
+  }
+
+  /**
+   * @return \Psr\Log\LoggerInterface
+   */
+  public function getLog() {
+    return $this->log;
   }
 
 }

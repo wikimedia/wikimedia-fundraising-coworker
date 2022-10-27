@@ -4,6 +4,7 @@ namespace Civi\Coworker\Command;
 
 use Bramus\Monolog\Formatter\ColoredLineFormatter;
 use Civi\Coworker\Configuration;
+use Civi\Coworker\Util\LogFilter;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\AbstractProcessingHandler;
@@ -25,9 +26,16 @@ trait ConfigurationTrait {
   protected function createConfiguration(InputInterface $input, OutputInterface $output): Configuration {
     // Wouldn't it be nicer to have some attribute/annotation mapping...
 
-    $map = [
+    $optionMap = [
       'pipe' => 'pipeCommand',
       'log' => 'logFile',
+    ];
+    $envMap = [
+      'COWORKER_MAX_WORKERS' => 'maxConcurrentWorkers',
+      'COWORKER_MAX_DURATION' => 'maxTotalDuration',
+      'COWORKER_WORKER_REQUESTS' => 'maxWorkerRequests',
+      'COWORKER_WORKER_DURATION' => 'maxWorkerDuration',
+      'COWORKER_GC_WORKERS' => 'gcWorkers',
     ];
 
     $cfg = new Configuration();
@@ -51,7 +59,14 @@ trait ConfigurationTrait {
       }
     }
 
-    foreach ($map as $inputOption => $cfgOption) {
+    foreach ($envMap as $envVar => $cfgOption) {
+      $envValue = getenv($envVar);
+      if ($envValue !== FALSE) {
+        $cfg->{$cfgOption} = $envValue;
+      }
+    }
+
+    foreach ($optionMap as $inputOption => $cfgOption) {
       $inputValue = $input->getOption($inputOption);
       if ($inputValue !== '') {
         $cfg->{$cfgOption} = $inputValue;
@@ -71,24 +86,27 @@ trait ConfigurationTrait {
         $cfg->logLevel = 'info';
       }
       else {
-        $cfg->logLevel = 'warning';
+        $cfg->logLevel = 'notice';
       }
     }
 
     return $cfg;
   }
 
+  /**
+   * @return \Monolog\Logger
+   */
   protected function createLogger(InputInterface $input, OutputInterface $output, Configuration $config): Logger {
     $log = new \Monolog\Logger($this->getName());
 
     if ($config->logFile) {
-      $fileHandler = new StreamHandler($config->logFile, $config->logLevel);
+      $fileHandler = new StreamHandler($config->logFile);
       $fileHandler->setFormatter($config->logFormat === 'json' ? new JsonFormatter() : new LineFormatter());
-      $log->pushHandler($fileHandler);
+      $log->pushHandler(new LogFilter($config, $fileHandler));
     }
 
     if ($output->isVerbose() || !$config->logFile) {
-      $consoleHandler = new class($output, $config->logLevel) extends AbstractProcessingHandler {
+      $consoleHandler = new class($output) extends AbstractProcessingHandler {
 
         /**
          * @var \Symfony\Component\Console\Output\OutputInterface
@@ -117,7 +135,7 @@ trait ConfigurationTrait {
 
       // $consoleHandler = new StreamHandler(STDERR, $config->logLevel);
       $consoleHandler->setFormatter($consoleFormatter);
-      $log->pushHandler($consoleHandler);
+      $log->pushHandler(new LogFilter($config, $consoleHandler));
     }
 
     $log->pushProcessor(new \Monolog\Processor\PsrLogMessageProcessor());

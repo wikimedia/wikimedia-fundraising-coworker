@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @group e2e
  */
-class Queue5Test extends TestCase {
+class ExplicitUserQueueTest extends TestCase {
 
   use CoworkerTestTrait;
 
@@ -29,18 +29,20 @@ class Queue5Test extends TestCase {
   }
 
   public function testQueue() {
+    $adminCid = $this->findUserCid('admin');
+
     $this->cvEval('queue_example_reset();');
-    $this->cvEval('queue_example_fill("a", range(1,5));');
+    $this->cvEval('queue_example_fill("a", range(1,4), ["domainId"=>1,"contactId"=>' . $adminCid . ']);');
+
     $this->execute('run', [
       '--pipe' => $this->cvCmd('ev "Civi::pipe();"'),
       '--define' => ['maxTotalDuration=10'],
     ]);
     $this->assertExampleJsonOutput($this->logFile, [
-      ['v' => 1, 'u' => NULL, 'd' => 1],
-      ['v' => 2, 'u' => NULL, 'd' => 1],
-      ['v' => 3, 'u' => NULL, 'd' => 1],
-      ['v' => 4, 'u' => NULL, 'd' => 1],
-      ['v' => 5, 'u' => NULL, 'd' => 1],
+      ['v' => 1, 'u' => $adminCid, 'd' => 1],
+      ['v' => 2, 'u' => $adminCid, 'd' => 1],
+      ['v' => 3, 'u' => $adminCid, 'd' => 1],
+      ['v' => 4, 'u' => $adminCid, 'd' => 1],
     ]);
   }
 

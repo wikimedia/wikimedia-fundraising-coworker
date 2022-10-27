@@ -19,7 +19,7 @@ class RunCommandUnitTest extends TestCase {
   public function testStartup() {
     $tester = $this->execute('run', [
       '--pipe' => $this->getPath('scripts/dummy-jsonrpc.php'),
-      '--define' => ['maxTotalDuration=3'],
+      '--define' => ['maxTotalDuration=3', 'logPolling=1'],
     ]);
     $this->assertEquals(0, $tester->getStatusCode());
 
@@ -27,6 +27,7 @@ class RunCommandUnitTest extends TestCase {
       ';Starting.*CiviQueueWatcher;',
       ';Poll queues.*CiviQueueWatcher;',
       ';Poll queues.*CiviQueueWatcher;',
+      ';Exceeded duration limit;',
       ';Stopping.*CiviQueueWatcher;',
       ';Stopped;',
     ];

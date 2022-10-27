@@ -2,26 +2,25 @@
 
 namespace Civi\Coworker\Command;
 
+use Civi\Coworker\Client\CiviClientInterface;
 use Civi\Coworker\Client\CiviPipeClient;
 use Civi\Coworker\CiviQueueWatcher;
 use Civi\Coworker\PipeConnection;
 use Civi\Coworker\PipePool;
+use Civi\Coworker\Runtime;
 use Civi\Coworker\Util\PromiseUtil;
+use Civi\Coworker\Util\TaskSplitter;
 use React\EventLoop\Loop;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use function Clue\React\Block\await;
 
 class RunCommand extends Command {
 
   use ConfigurationTrait;
-
-  /**
-   * @var \Monolog\Logger
-   */
-  private $logger;
 
   protected function configure() {
     $this
@@ -60,40 +59,49 @@ class RunCommand extends Command {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    $config = $this->createConfiguration($input, $output);
-    $this->logger = $this->createLogger($input, $output, $config);
+    $runtime = Runtime::get();
+    $runtime->io = new SymfonyStyle($input, $output);
+    $runtime->input = $input;
+    $runtime->output = $output;
+    $runtime->config = $this->createConfiguration($input, $output);
+    $runtime->logger = $this->createLogger($input, $output, $runtime->config);
+
+    $runtime->logger->debug('Configuration: {c}', ['c' => (array) $runtime->config]);
+
     // [$ctlChannel, $workChannel] = $this->pickChannels($input, $output);
-    // $this->logger->info('Setup channels (control={ctl}, work={work})', [
+    // $logger->info('Setup channels (control={ctl}, work={work})', [
     //   'ctl' => $ctlChannel,
     //   'work' => $workChannel,
     // ]);
 
-    $ctl = new CiviPipeClient(
-      $config,
-      new PipeConnection($config, 'ctl', $this->logger->withName('CtlPipe')),
-      $this->logger->withName('CtlConn')
-    );
+    $ctl = $this->createControlChannel($runtime);
     $welcome = await($ctl->start());
 
     if (($welcome['t'] ?? NULL) === 'trusted') {
       await($ctl->options(['apiCheckPermissions' => FALSE]));
     }
     else {
-      throw new \Exception("coworker requires trusted connection");
+      throw new \Exception('coworker requires a trusted control channel');
       // Future: Alternatively, if $header['l']==='login' and you have login-credentials,
       // then perform a login.
     }
 
-    $workPool = new PipePool($config, $this->logger->withName('WorkPool'));
-    await($workPool->start());
+    $workerPool = $this->createWorkerPool($runtime);
+    await($workerPool->start());
 
-    $watcher = new CiviQueueWatcher($config, $ctl, $workPool, $this->logger->withName('CiviQueueWatcher'));
+    $watcher = new CiviQueueWatcher($runtime->config(), $ctl, $workerPool, $runtime->logger()->withName('CiviQueueWatcher'));
     $onStop = PromiseUtil::on($watcher, 'stop');
 
-    $watcher->start()->then(function() use ($config, $watcher) {
+    $watcher->start()->then(function() use ($runtime, $watcher) {
+      $config = $runtime->config();
       if (!empty($config->maxTotalDuration)) {
         Loop::addTimer($config->maxTotalDuration, function() use ($watcher) {
-          $watcher->stop();
+          Runtime::get()->logger()->info('Exceeded duration limit ({sec} seconds).', [
+            'sec' => Runtime::get()->config()->maxTotalDuration,
+          ]);
+          $watcher->stop()->then(function() {
+            Runtime::get()->logger()->info('Stopped');
+          });
         });
       }
     });
@@ -127,6 +135,36 @@ class RunCommand extends Command {
       default:
         throw new \RuntimeException("Please set --channel options");
     }
+  }
+
+  /**
+   * @param \Civi\Coworker\Runtime $runtime
+   * @return \Civi\Coworker\Client\CiviClientInterface
+   */
+  protected function createControlChannel(Runtime $runtime): CiviClientInterface {
+    $pipeConnection = new PipeConnection(
+      $runtime->config(),
+      'ctl',
+      $runtime->logger()->withName('CtlPipe')
+    );
+    return new CiviPipeClient(
+      $runtime->config(),
+      $pipeConnection,
+      $runtime->logger()->withName('CtlClient')
+    );
+  }
+
+  /**
+   * @param \Civi\Coworker\Runtime $runtime
+   * @return \Civi\Coworker\PipePool
+   *   FIXME: Don't specifically require pipes!
+   */
+  protected function createWorkerPool(Runtime $runtime): PipePool {
+    return new PipePool(
+      $runtime->config(),
+      $runtime->logger()->withName('Pool'),
+      [TaskSplitter::class, 'onConnect']
+    );
   }
 
 }

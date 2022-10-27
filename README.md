@@ -181,6 +181,30 @@ Tests are organized into two groups:
 
 (Note: `CV_TEST_BUILD` is required for E2E tests, and it is ignored by unit tests.)
 
+# Configuration
+
+The `Configuration` class defines a series of configuration options which may be defined in multiple ways:
+
+| Class Property | File Field | Environment Variable | CLI Option |
+| -- | -- | -- | -- |
+| `$minimumCivicrmVersion` | `minimumCivicrmVersion` | n/a                        | `-d minimumCivicrmVersion=X` |
+| `$maxConcurrentWorkers`  | `maxConcurrentWorkers`  | `COWORKER_MAX_WORKERS`     | `-d maxConcurrentWorkers=X` |
+| `$maxTotalDuration`      | `maxTotalDuration`      | `COWORKER_MAX_DURATION`    | `-d maxTotalDuration=X` |
+| `$maxWorkerRequests`     | `maxWorkerRequests`     | `COWORKER_WORKER_REQUESTS` | `-d maxWorkerRequests=X` |
+| `$maxWorkerDuration`     | `maxWorkerDuration`     | `COWORKER_WORKER_DURATION` | `-d maxWorkerDuration=X` |
+| `$gcWorkers`             | `gcWorkers`             | `COWORKER_GC_WORKERS`      | `-d gcWorkers=X` |
+| `$pipeCommand`           | `pipeCommand`           | n/a                        | `--pipe=X` |
+| `$logFile`               | `logFile`               | n/a                        | `--log=X` |
+| `$logLevel`              | `logLevel`              | n/a                        | `-v` or `-vv` |
+| `$logFormat`             | `logFormat`             | n/a                        | `-d logFormat=X` |
+
+If the same value is specified multiple ways, the value will be chosen based on priority (*from highest to lowest*):
+
+* Command line option
+* Environment variable
+* Configuration file
+* Class default
+
 # Publication
 
 * New builds of `master` are published automatically by https://test.civicrm.org/view/Tools/job/Tool-Publish-coworker/ 

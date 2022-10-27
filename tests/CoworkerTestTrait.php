@@ -1,6 +1,7 @@
 <?php
 namespace Civi\Coworker;
 
+use Civi\Coworker\Util\JsonLines;
 use React\Promise\PromiseInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -64,8 +65,13 @@ trait CoworkerTestTrait {
     return $result;
   }
 
-  protected function cvEval(string $phpCode): string {
-    return $this->cv('ev ' . escapeshellarg($phpCode));
+  protected function cvEval(string $phpCode, ?string $user = NULL): string {
+    $cmd = 'ev ';
+    if ($user !== NULL) {
+      $cmd .= '--user=' . escapeshellarg($user) . ' ';
+    }
+    $cmd .= escapeshellarg($phpCode);
+    return $this->cv($cmd);
   }
 
   /**
@@ -78,6 +84,33 @@ trait CoworkerTestTrait {
     $this->assertTrue(is_dir($cvRoot), "CV_TEST_BUILD ($cvRoot) should be a valid root");
     $cvCmd = sprintf('cv --cwd=%s %s', escapeshellarg($cvRoot), $cmd);
     return $cvCmd;
+  }
+
+  protected function findUserCid(string $username): int {
+    $val = trim($this->cvEval('echo CRM_Core_Session::getLoggedInContactID();', $username));
+    if ($val && is_numeric($val)) {
+      return (int) $val;
+    }
+    else {
+      throw new \RuntimeException("Expected contact id for $username. Received: $val");
+    }
+  }
+
+  /**
+   * Assert that the 'queue_example' log file contains certain data.
+   *
+   * @param string $jsonLogFile
+   * @param array $expected
+   *   Ex: [0 => ['d' => EXPECT_DATA, 'u' => EXPECT_USER, 'd' => EXPECT_DOMAIN]]
+   */
+  protected function assertExampleJsonOutput(string $jsonLogFile, array $expected): void {
+    $actualLines = JsonLines::parseFile($jsonLogFile);
+    $this->assertEquals(count($expected), count($actualLines), "Lines:\n" . json_encode($actualLines, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+    foreach (array_keys($actualLines) as $offset) {
+      $this->assertEquals($expected[$offset]['d'], $actualLines[$offset]['d'], "Line $offset has unexpected domain ID");
+      $this->assertEquals($expected[$offset]['u'], $actualLines[$offset]['u'], "Line $offset has unexpected user ID");
+      $this->assertEquals($expected[$offset]['v'], $actualLines[$offset]['v'], "Line $offset has unexpected value");
+    }
   }
 
 }
