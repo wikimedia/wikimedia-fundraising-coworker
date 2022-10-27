@@ -118,6 +118,8 @@ class PipePool {
   public function checkQueue(): void {
     while (TRUE) {
       if (empty($this->todos)) {
+        $this->cleanupIdleConnections();
+
         // Nothing to do... try again later...
         return;
       }
@@ -214,6 +216,22 @@ class PipePool {
     }
     $this->log->debug('cleanupConnections: removed {count} connection(s)', ['count' => $removedCount]);
     return $removedCount;
+  }
+
+  /**
+   * Find any connections which have been active for more than ($maxWorkerIdle) seconds.
+   * Stop them.
+   *
+   * @return \React\Promise\PromiseInterface
+   */
+  private function cleanupIdleConnections(): PromiseInterface {
+    $promises = [];
+    foreach ($this->connections as $connection) {
+      if ($connection->isIdle() && $connection->getIdleDuration() > $this->configuration->maxWorkerIdle) {
+        $promises[] = $this->removeConnection($connection->id);
+      }
+    }
+    return all($promises);
   }
 
   private function findIdleConnection(string $context): ?PipeConnection {

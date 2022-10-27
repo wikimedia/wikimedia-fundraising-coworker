@@ -48,6 +48,13 @@ class Configuration {
   public $maxWorkerDuration = 10 * 60;
 
   /**
+   * If the worker is idle for $X seconds, then shut it down.
+   *
+   * @var int
+   */
+  public $maxWorkerIdle = 60;
+
+  /**
    * Whenever we hit the maximum, we have to remove some old workers.
    * How many should we try to remove?
    *

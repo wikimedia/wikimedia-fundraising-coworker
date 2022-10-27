@@ -192,6 +192,7 @@ The `Configuration` class defines a series of configuration options which may be
 | `$maxTotalDuration`      | `maxTotalDuration`      | `COWORKER_MAX_DURATION`    | `-d maxTotalDuration=X` |
 | `$maxWorkerRequests`     | `maxWorkerRequests`     | `COWORKER_WORKER_REQUESTS` | `-d maxWorkerRequests=X` |
 | `$maxWorkerDuration`     | `maxWorkerDuration`     | `COWORKER_WORKER_DURATION` | `-d maxWorkerDuration=X` |
+| `$maxWorkerIdle`         | `maxWorkerIdle`         | `COWORKER_WORKER_IDLE`     | `-d maxWorkerIdle=X`     |
 | `$gcWorkers`             | `gcWorkers`             | `COWORKER_GC_WORKERS`      | `-d gcWorkers=X` |
 | `$pipeCommand`           | `pipeCommand`           | n/a                        | `--pipe=X` |
 | `$logFile`               | `logFile`               | n/a                        | `--log=X` |

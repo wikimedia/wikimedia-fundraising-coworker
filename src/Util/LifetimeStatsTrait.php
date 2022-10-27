@@ -17,6 +17,13 @@ trait LifetimeStatsTrait {
   protected $endTime = NULL;
 
   /**
+   * The time at which this unit became idle.
+   *
+   * @var double|null
+   */
+  protected $idleSince = NULL;
+
+  /**
    * @var int
    */
   protected $requestCount = 0;
@@ -69,6 +76,29 @@ trait LifetimeStatsTrait {
       return TRUE;
     }
     return FALSE;
+  }
+
+  /**
+   * Mark this object as idle.
+   */
+  public function idling(): void {
+    $this->idleSince = $this->idleSince ?: microtime(1);
+  }
+
+  /**
+   * Mark this object as not idle.
+   */
+  public function notIdling(): void {
+    $this->idleSince = NULL;
+  }
+
+  /**
+   * Determine how long the object has been idle.
+   *
+   * @return float
+   */
+  public function getIdleDuration(): float {
+    return $this->idleSince ? (microtime(1) - $this->idleSince) : 0;
   }
 
 }

@@ -70,6 +70,7 @@ class PipeConnection {
     $this->context = $context;
     $this->configuration = $configuration;
     $this->deferred = NULL;
+    $this->idling();
 
     $name = "Pipe[{$this->id}]";
     $this->log = $logger ? $logger->withName($name) : new Logger($name);
@@ -105,6 +106,7 @@ class PipeConnection {
       if ($this->deferred !== NULL) {
         $oldDeferred = $this->deferred;
         $this->deferred = NULL;
+        $this->idling();
         $oldDeferred->reject('Process exited');
       }
     });
@@ -222,6 +224,7 @@ class PipeConnection {
       throw new \RuntimeException("Cannot send request. Worker is busy.");
     }
 
+    $this->notIdling();
     $this->deferred = new \React\Promise\Deferred();
     return $this->deferred;
   }
@@ -234,6 +237,7 @@ class PipeConnection {
   private function releaseDeferred(): Deferred {
     $oldDeferred = $this->deferred;
     $this->deferred = NULL;
+    $this->idling();
     return $oldDeferred;
   }
 
