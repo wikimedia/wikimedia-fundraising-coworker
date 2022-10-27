@@ -53,6 +53,7 @@ class Application extends \Symfony\Component\Console\Application {
    */
   public function createCommands($context = 'default') {
     $commands = array();
+    $commands[] = new \Civi\Coworker\Command\DebugCommand();
     $commands[] = new \Civi\Coworker\Command\RunCommand();
     return $commands;
   }
