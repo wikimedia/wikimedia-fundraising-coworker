@@ -24,6 +24,7 @@
         "react/child-process": "^0.6.4",
         "react/promise": "^2.8",
         "symfony/console": "~4.4",
+        "lesser-evil/shell-verbosity-is-evil": "~1.0",
         "monolog/monolog": "^2.3",
         "clue/block-react": "^1.5",
         "clue/mq-react": "~1.4.0",

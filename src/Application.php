@@ -1,6 +1,7 @@
 <?php
 namespace Civi\Coworker;
 
+use LesserEvil\ShellVerbosityIsEvil;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -56,6 +57,12 @@ class Application extends \Symfony\Component\Console\Application {
     $commands[] = new \Civi\Coworker\Command\DebugCommand();
     $commands[] = new \Civi\Coworker\Command\RunCommand();
     return $commands;
+  }
+
+  protected function configureIO(InputInterface $input, OutputInterface $output) {
+    ShellVerbosityIsEvil::doWithoutEvil(function() use ($input, $output) {
+      parent::configureIO($input, $output);
+    });
   }
 
 }
