@@ -31,11 +31,13 @@ class LogFilter extends HandlerWrapper {
       return FALSE;
     }
 
+    $channel = $record['channel'] ?? '';
+
     if (!$this->config->logPolling && $record['level'] <= Logger::DEBUG) {
-      if (preg_match('/^Pipe\[ctl#/', $record['channel'])) {
+      if (preg_match('/^Pipe\[ctl#/', $channel)) {
         return FALSE;
       }
-      if ($record['channel'] === 'CtlClient') {
+      if ($channel === 'CtlClient') {
         return FALSE;
       }
       if (!empty($record['context']['isPolling'])) {
@@ -44,7 +46,7 @@ class LogFilter extends HandlerWrapper {
     }
 
     if (!$this->config->logInternalQueue && $record['level'] <= Logger::DEBUG) {
-      if (preg_match('/^CiviPool\[/', $record['channel'])) {
+      if (preg_match('/^CiviPool\[/', $channel)) {
         return FALSE;
       }
       if (!empty($record['context']['isIntQueue'])) {
