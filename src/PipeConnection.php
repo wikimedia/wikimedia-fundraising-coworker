@@ -196,7 +196,7 @@ class PipeConnection {
     if ($this->deferred) {
       $this->releaseDeferred()->resolve($responseLine);
     }
-    else {
+    elseif ($responseLine !== '') {
       $this->log->error('Received unexpected response line: "{responseLine}"', ['responseLine' => $responseLine]);
     }
   }
