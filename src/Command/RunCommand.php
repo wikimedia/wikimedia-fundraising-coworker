@@ -79,6 +79,8 @@ class RunCommand extends Command {
       // then perform a login.
     }
 
+    $runtime->config->onConnect($welcome, $ctl);
+
     $workerPool = $this->createWorkerPool($runtime);
     await($workerPool->start());
 

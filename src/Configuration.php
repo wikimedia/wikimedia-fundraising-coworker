@@ -2,6 +2,9 @@
 
 namespace Civi\Coworker;
 
+use Civi\Coworker\Client\CiviClientInterface;
+use function Clue\React\Block\await;
+
 class Configuration {
 
   /**
@@ -113,6 +116,17 @@ class Configuration {
    */
   public $logFormat;
 
+  /**
+   * Query to use for selecting the list of target queues.
+   *
+   * If omitted, a query will be chosen after inspecting the CiviCRM runtime.
+   *
+   * Ex: ['where' => [['runner', 'IS NOT EMPTY'], ['status', '=', 'active']]]
+   *
+   * @var array
+   */
+  public $queueFilter;
+
   public function __construct(array $values = []) {
     foreach ($values as $field => $value) {
       $this->{$field} = $value;
@@ -121,6 +135,33 @@ class Configuration {
 
   public function __set($name, $value) {
     throw new \RuntimeException(sprintf('Unrecognized property: %s::$%s', __CLASS__, $name));
+  }
+
+  /**
+   * After getting a control-channel, inspect the system and fine-tune the configuration.
+   *
+   * @param array $welcome
+   * @param \Civi\Coworker\Client\CiviClientInterface $ctlChannel
+   *   Reference to the control-channel.
+   * @throws \Exception
+   */
+  public function onConnect(array $welcome, CiviClientInterface $ctlChannel) {
+    if ($this->queueFilter === NULL) {
+      $this->queueFilter = $this->pickQueueFilter($ctlChannel);
+    }
+  }
+
+  private function pickQueueFilter(CiviClientInterface $ctl): array {
+    $queueFields = await($ctl->api4('Queue', 'getFields', ['select' => ['name']]));
+    $queueFieldNames = array_column($queueFields, 'name');
+    if (in_array('agent', $queueFieldNames)) {
+      // 5.47 - 5.67
+      return ['where' => [['agent', 'CONTAINS', 'server'], ['status', '=', 'active']]];
+    }
+    else {
+      // 5.68+
+      return ['where' => [['runner', 'IS NOT EMPTY'], ['status', '=', 'active']]];
+    }
   }
 
 }
