@@ -72,7 +72,7 @@ trait LifetimeStatsTrait {
     if ($this->requestCount >= $configuration->maxWorkerRequests) {
       return TRUE;
     }
-    if ($this->startTime + $configuration->maxWorkerDuration < microtime(TRUE)) {
+    if ($this->startTime + $configuration->workerDuration < microtime(TRUE)) {
       return TRUE;
     }
     return FALSE;
@@ -128,7 +128,7 @@ trait LifetimeStatsTrait {
    *   Higher values indicate older objects.
    */
   public function getAgeRank(Configuration $configuration, int $scale): int {
-    return $this->startTime ? floor($scale * (microtime(1) - $this->startTime) / $configuration->maxWorkerDuration) : 0;
+    return $this->startTime ? floor($scale * (microtime(1) - $this->startTime) / $configuration->workerDuration) : 0;
   }
 
 }

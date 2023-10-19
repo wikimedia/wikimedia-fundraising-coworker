@@ -14,7 +14,7 @@ Create a YAML file such as `/etc/coworker.yaml`:
 
 ```yaml
 workerCount: 5
-maxWorkerDuration: 120
+workerDuration: 120
 maxWorkerRequests: 10
 maxWorkerIdle: 15
 ```
@@ -126,16 +126,16 @@ After reaching this limit, no more tasks will be given to the worker.
 * __File Field__: `maxWorkerRequests`
 * __Class Property__: `$maxWorkerRequests`
 
-### maxWorkerDuration
+### workerDuration
 
 Maximum amount of time (seconds) for which a single worker should execute.
 
 After reaching this limit, no more tasks will be given to the worker.
 
-* __CLI Option__: `-d maxWorkerDuration=X`
+* __CLI Option__: `-d workerDuration=X`
 * __Environment Variable__: `COWORKER_WORKER_DURATION`
-* __File Field__: `maxWorkerDuration`
-* __Class Property__: `$maxWorkerDuration`
+* __File Field__: `workerDuration`
+* __Class Property__: `$workerDuration`
 
 ### maxWorkerIdle
 

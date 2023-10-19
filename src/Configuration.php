@@ -48,7 +48,7 @@ class Configuration {
    *
    * @var int
    */
-  public $maxWorkerDuration = 10 * 60;
+  public $workerDuration = 10 * 60;
 
   /**
    * If the worker is idle for $X seconds, then shut it down.
@@ -155,6 +155,7 @@ class Configuration {
     $aliases = [
       // Old name => New name
       'maxConcurrentWorkers' => 'workerCount',
+      'maxWorkerDuration' => 'workerDuration',
     ];
 
     foreach ($options as $cfgOption => $inputValue) {
