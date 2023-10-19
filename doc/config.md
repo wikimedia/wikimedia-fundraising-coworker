@@ -59,6 +59,41 @@ Store logs in a file
 * __File Field__: `logFile`
 * __Class Property__: `$logFile`
 
+### logFormat
+
+One of: `text|json`
+
+* __CLI Option__: `-d logFormat=X`
+* __Environment Variable__: _n/a_
+* __File Field__: `logFormat`
+* __Class Property__: `$logFormat`
+
+### logInternalQueue
+
+Should we enable logging for the internal-queue mechanism?
+
+After claiming a task, it is momentarily placed on an internal-queue while we find/setup resources for executing the
+task. By default, we exclude details about this from the log. However, you may re-enable it if you are specifically
+debugging issues coworker's task management.
+
+* __CLI Option__: `-d logInternalQueue=1`
+* __Environment Variable__: _n/a_
+* __File Field__: `logInternalQueue`
+* __Class Property__: `$logInternalQueue`
+
+### logPolling
+
+Should we enable polling-related debug info?
+
+The polling process sends a very large number of requests to the control-channel, and most of these don't result in
+anything interesting. By default, we exclude details about this from the log. However, you may re-enable it if you are
+specifically debugging issues with the polling mechanism.
+
+* __CLI Option__: `-d logPolling=1`
+* __Environment Variable__: _n/a_
+* __File Field__: `logPolling`
+* __Class Property__: `$logPolling`
+
 ### logLevel
 
 Level of information to write to log file.
@@ -70,14 +105,6 @@ One of: `debug|info|notice|warning|error|critical|alert|emergency`
 * __File Field__: `logLevel`
 * __Class Property__: `$logLevel`
 
-### logFormat
-
-One of: `text|json`
-
-* __CLI Option__: `-d logFormat=X`
-* __Environment Variable__: _n/a_
-* __File Field__: `logFormat`
-* __Class Property__: `$logFormat`
 
 ### maxConcurrentWorkers
 

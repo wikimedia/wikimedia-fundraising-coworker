@@ -1,5 +1,13 @@
 # coworker: Development
 
+## Inspection
+
+Consider setting these [config options](config.md):
+
+```bash
+coworker debug -d logPolling=1 -d logInternalQueue=1
+```
+
 ## Tests
 
 Tests are organized into two groups:
