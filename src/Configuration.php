@@ -13,7 +13,7 @@ class Configuration {
    *   Ex: '5.47.alpha1' for current Pipe/JSON-RPC format
    *   Ex: '5.51.alpha1' for current Queue API
    */
-  public $minimumCivicrmVersion = '5.51.alpha1';
+  public $civicrmVersion = '5.51.alpha1';
 
   /**
    * Maximum number of workers that may be running at the same time.
@@ -161,6 +161,7 @@ class Configuration {
       'gcWorkers' => 'workerCleanupCount',
       'maxTotalDuration' => 'agentDuration',
       'queueFilter' => 'pollQuery',
+      'minimumCivicrmVersion' => 'civicrmVersion',
     ];
 
     foreach ($options as $cfgOption => $inputValue) {

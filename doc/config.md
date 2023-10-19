@@ -159,14 +159,14 @@ After reaching this limit, no more workers will be started, and no more tasks wi
 * __File Field__: `agentDuration`
 * __Class Property__: `$agentDuration`
 
-### minimumCivicrmVersion
+### civicrmVersion
 
 Only run if the local CiviCRM deployment meets this minimum requirement.
 
-* __CLI Option__: `-d minimumCivicrmVersion=X`
+* __CLI Option__: `-d civicrmVersion=X`
 * __Environment Variable__: _n/a_
-* __File Field__: `minimumCivicrmVersion`
-* __Class Property__: `$minimumCivicrmVersion`
+* __File Field__: `civicrmVersion`
+* __Class Property__: `$civicrmVersion`
 
 ### pipeCommand
 

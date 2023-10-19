@@ -56,7 +56,7 @@ class CiviPipeClient implements CiviClientInterface {
     return $this->pipeConnection->start()
       ->then(function (string $welcomeLine) {
         try {
-          $welcome = JsonRpc::parseWelcome($welcomeLine, $this->config->minimumCivicrmVersion);
+          $welcome = JsonRpc::parseWelcome($welcomeLine, $this->config->civicrmVersion);
         }
         catch (\Exception $e) {
           return reject($e);
