@@ -25,7 +25,7 @@ class DebugCommand extends RunCommand {
     $config->workerCount = 1;
     $config->workerTimeout = PipePool::QUEUE_INTERVAL / 2;
     $config->workerRequests = 1;
-    $config->gcWorkers = 1;
+    $config->workerCleanupCount = 1;
 
     return $config;
   }

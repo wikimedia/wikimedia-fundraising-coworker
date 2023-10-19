@@ -41,14 +41,14 @@ coworker run
 
 ## Option reference
 
-### gcWorkers
+### workerCleanupCount
 
 Whenever we hit the maximum number of workers, we have to remove some old workers. How many should we try to remove?
 
-* __CLI Option__: `-d gcWorkers=X`
+* __CLI Option__: `-d workerCleanupCount=X`
 * __Environment Variable__: `COWORKER_GC_WORKERS`
-* __File Field__: `gcWorkers`
-* __Class Property__: `$gcWorkers`
+* __File Field__: `workerCleanupCount`
+* __Class Property__: `$workerCleanupCount`
 
 ### logFile
 

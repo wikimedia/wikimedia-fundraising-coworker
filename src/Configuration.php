@@ -63,7 +63,7 @@ class Configuration {
    *
    * @var int
    */
-  public $gcWorkers = 1;
+  public $workerCleanupCount = 1;
 
   /**
    * External command used to start the pipe.
@@ -158,6 +158,7 @@ class Configuration {
       'maxWorkerDuration' => 'workerDuration',
       'maxWorkerRequests' => 'workerRequests',
       'maxWorkerIdle' => 'workerTimeout',
+      'gcWorkers' => 'workerCleanupCount',
     ];
 
     foreach ($options as $cfgOption => $inputValue) {

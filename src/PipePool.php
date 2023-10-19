@@ -143,7 +143,7 @@ class PipePool {
 
       // We want to make a new connection... Is there room?
       if (count($this->connections) >= $this->configuration->workerCount) {
-        $this->cleanupConnections($this->configuration->gcWorkers);
+        $this->cleanupConnections($this->configuration->workerCleanupCount);
       }
 
       if (count($this->connections) >= $this->configuration->workerCount) {
