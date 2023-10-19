@@ -176,3 +176,19 @@ External command used to start the pipe.
 * __Environment Variable__: _n/a_
 * __File Field__: `pipeCommand`
 * __Class Property__: `$pipeCommand`
+
+### queueFilter
+
+`coworker` must determine which queues to monitor.
+
+By default, it looks for queues which meet these two criteria:
+
+* `status=active`
+* `agent CONTAINS server` (v5.68+) or `runner IS NOT EMPTY` (v5.47-5.67)
+
+This filter is an array-tree that will be passed to `Queue.get` (APIv4).
+
+* __CLI Option__: _n/a_
+* __Environment Variable__: _n/a_
+* __File Field__: `queueFilter`
+* __Class Property__: `$queueFilter`
