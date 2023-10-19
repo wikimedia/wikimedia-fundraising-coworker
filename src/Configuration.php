@@ -39,7 +39,7 @@ class Configuration {
    *
    * @var int
    */
-  public $maxWorkerRequests = 10;
+  public $workerRequests = 10;
 
   /**
    * Maximum amount of time (seconds) for which a single worker should execute.
@@ -156,6 +156,7 @@ class Configuration {
       // Old name => New name
       'maxConcurrentWorkers' => 'workerCount',
       'maxWorkerDuration' => 'workerDuration',
+      'maxWorkerRequests' => 'workerRequests',
     ];
 
     foreach ($options as $cfgOption => $inputValue) {

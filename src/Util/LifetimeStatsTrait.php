@@ -69,7 +69,7 @@ trait LifetimeStatsTrait {
     if ($this->moribund) {
       return TRUE;
     }
-    if ($this->requestCount >= $configuration->maxWorkerRequests) {
+    if ($this->requestCount >= $configuration->workerRequests) {
       return TRUE;
     }
     if ($this->startTime + $configuration->workerDuration < microtime(TRUE)) {

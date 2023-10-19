@@ -16,7 +16,7 @@ class ManyContextsTest extends PipePoolTestCase {
   protected function buildConfig(): array {
     return [
       'workerCount' => 5,
-      'maxWorkerRequests' => 100,
+      'workerRequests' => 100,
       'pipeCommand' => $this->getPath('scripts/dummy-inf.sh'),
     ];
   }

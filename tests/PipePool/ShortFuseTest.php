@@ -13,7 +13,7 @@ class ShortFuseTest extends PipePoolTestCase {
   protected function buildConfig(): array {
     return [
       'workerCount' => 2,
-      'maxWorkerRequests' => 2,
+      'workerRequests' => 2,
       'pipeCommand' => $this->getPath('scripts/dummy-inf.sh'),
     ];
   }

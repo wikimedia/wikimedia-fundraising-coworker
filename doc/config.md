@@ -15,7 +15,7 @@ Create a YAML file such as `/etc/coworker.yaml`:
 ```yaml
 workerCount: 5
 workerDuration: 120
-maxWorkerRequests: 10
+workerRequests: 10
 maxWorkerIdle: 15
 ```
 
@@ -115,16 +115,16 @@ Maximum number of workers that may be running at the same time.
 * __File Field__: `workerCount`
 * __Class Property__: `$workerCount	`
 
-### maxWorkerRequests
+### workerRequests
 
 Maximum number of tasks to assign a single worker.
 
 After reaching this limit, no more tasks will be given to the worker.
 
-* __CLI Option__: `-d maxWorkerRequests=X`
+* __CLI Option__: `-d workerRequests=X`
 * __Environment Variable__: `COWORKER_WORKER_REQUESTS`
-* __File Field__: `maxWorkerRequests`
-* __Class Property__: `$maxWorkerRequests`
+* __File Field__: `workerRequests`
+* __Class Property__: `$workerRequests`
 
 ### workerDuration
 

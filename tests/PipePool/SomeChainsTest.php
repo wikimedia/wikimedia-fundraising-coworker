@@ -18,7 +18,7 @@ class SomeChainsTest extends PipePoolTestCase {
   protected function buildConfig(): array {
     return [
       'workerCount' => 4,
-      'maxWorkerRequests' => 100,
+      'workerRequests' => 100,
       'pipeCommand' => $this->getPath('scripts/dummy-inf.sh'),
     ];
   }

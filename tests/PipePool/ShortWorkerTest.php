@@ -13,7 +13,7 @@ class ShortWorkerTest extends PipePoolTestCase {
   protected function buildConfig(): array {
     return [
       'workerCount' => 100,
-      'maxWorkerRequests' => 1,
+      'workerRequests' => 1,
       'pipeCommand' => $this->getPath('scripts/dummy-inf.sh'),
     ];
   }
