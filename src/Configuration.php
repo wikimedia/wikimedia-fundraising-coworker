@@ -117,6 +117,20 @@ class Configuration {
   public $logFormat;
 
   /**
+   * How often are we allowed to poll the queues for new items? (#seconds)
+   *
+   * Lower values will improve responsiveness - and increase the number of queries.
+   *
+   * Note that there may be multiple queues to poll, and each poll operation may take
+   * some #milliseconds. This number is not a simple `sleep()`; rather, it is a target.
+   * After doing a round of polling, we will sleep as long as necessary in
+   * order to meet the $pollInterval.
+   *
+   * @var float
+   */
+  public $pollInterval = 0.66;
+
+  /**
    * Query to use for selecting the list of target queues.
    *
    * If omitted, a query will be chosen after inspecting the CiviCRM runtime.

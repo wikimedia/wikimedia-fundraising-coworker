@@ -177,6 +177,22 @@ External command used to start the pipe.
 * __File Field__: `pipeCommand`
 * __Class Property__: `$pipeCommand`
 
+## pollInterval
+
+How often are we allowed to poll the queues for new items? (#seconds)
+
+Lower values will improve responsiveness - and increase the number of queries.
+
+Note that there may be multiple queues to poll, and each poll operation may take
+some #milliseconds. This number is not a simple `sleep()`; rather, it is a target.
+After doing a round of polling, we will sleep as long as necessary in
+order to meet the $pollInterval.
+
+* __CLI Option__: `-d pollInterval=X`
+* __Environment Variable__: _n/a_
+* __File Field__: `pollInterval`
+* __Class Property__: `$pollInterval`
+
 ### queueFilter
 
 `coworker` must determine which queues to monitor.

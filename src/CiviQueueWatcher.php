@@ -21,7 +21,7 @@ use function React\Promise\resolve;
  * 2. runQueueItem($queueName): Check each queue one-by-one. Claim their front-most task (if any)
  *    and then execute it (via PipePool).
  * 3. finishInterval(): Sleep for a moment in between scans. Ensure that we don't run more than 1
- *    scan per POLL_INTERVAL.
+ *    scan per {$pollInterval}.
  * 4. Go back to step #1.
  *
  * This loop begins with a call to `start()` and terminates with a call to `stop()`.
@@ -30,14 +30,6 @@ use function React\Promise\resolve;
 class CiviQueueWatcher {
 
   use EventEmitterTrait;
-
-  /**
-   * How frequently to poll for tasks.
-   *
-   * Note that there may be multiple queues to poll, and each poll operation may take
-   * some #milliseconds. The
-   */
-  const POLL_INTERVAL = 1.0;
 
   /**
    * @var \Civi\Coworker\Configuration
@@ -108,7 +100,7 @@ class CiviQueueWatcher {
     $this->addStep = new \Clue\React\Mq\Queue(1, NULL, function ($args) {
       return $this->onNextStep($args);
     });
-    Loop::addTimer(static::POLL_INTERVAL, function() {
+    Loop::addTimer($this->config->pollInterval, function() {
       $this->addStep(['fillSteps']);
     });
     return resolve();
@@ -204,7 +196,7 @@ class CiviQueueWatcher {
    */
   protected function finishInterval(): PromiseInterface {
     $now = microtime(1);
-    $nextFillTime = $this->lastFillTime + static::POLL_INTERVAL;
+    $nextFillTime = $this->lastFillTime + $this->config->pollInterval;
     $waitTime = $nextFillTime - $now;
     return $waitTime > 0 ? \React\Promise\Timer\resolve($waitTime) : resolve();
   }
