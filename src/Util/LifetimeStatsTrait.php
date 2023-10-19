@@ -101,4 +101,34 @@ trait LifetimeStatsTrait {
     return $this->idleSince ? (microtime(1) - $this->idleSince) : 0;
   }
 
+  /**
+   * Quantify the relative idleness of this object.
+   *
+   * @param \Civi\Coworker\Configuration $configuration
+   * @param int $scale
+   *   Ex: 10
+   * @return int
+   *   Ex: A value between 0 and 10.
+   *   Ex: A value 2/10 indicates the object has gone ~20% of the way towards idle timeout.
+   *   Higher values indicate longer periods of idleness.
+   */
+  public function getIdleRank(Configuration $configuration, int $scale): int {
+    return $this->idleSince ? floor($scale * $this->getIdleDuration() / $configuration->maxWorkerIdle) : 0;
+  }
+
+  /**
+   * Quantify the relative age of this object.
+   *
+   * @param \Civi\Coworker\Configuration $configuration
+   * @param int $scale
+   *   Ex: 10
+   * @return int
+   *   Ex: A value between 0 and 10.
+   *   Ex: A value 2/10 indicates the object has gone ~20% of the way towards maximum duration.
+   *   Higher values indicate older objects.
+   */
+  public function getAgeRank(Configuration $configuration, int $scale): int {
+    return $this->startTime ? floor($scale * (microtime(1) - $this->startTime) / $configuration->maxWorkerDuration) : 0;
+  }
+
 }

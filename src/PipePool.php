@@ -171,33 +171,11 @@ class PipePool {
    */
   public function cleanupConnections(int $goalCount): int {
     // Score all workers - and decide which ones we can remove.
-
-    // Priority: remove crashed processes; then idle/exhausted processes; then idle/non-exhausted processes.
-    $getScore = function(PipeConnection $c) {
-      $running = $c->isRunning();
-      $idle = $c->isIdle();
-      $exhausted = $c->isExhausted($this->configuration);
-
-      // Positive scores are allowed to be removed. Negatives must be kept.
-      if (!$running) {
-        return 20;
-      }
-      if ($running && $idle && $exhausted) {
-        return 10;
-      }
-      if ($running && $idle && !$exhausted) {
-        return 5;
-      }
-      if ($running && !$idle) {
-        return -10;
-      }
-      throw new \RuntimeException("Failed to score worker");
-    };
-
+    $scorer = new PipePoolScorer($this->configuration);
     $sorted = new \SplPriorityQueue();
     foreach ($this->connections as $connection) {
       /** @var \Civi\Coworker\PipeConnection $connection */
-      $score = $getScore($connection);
+      $score = $scorer->score($connection);
       $this->log->debug('cleanupConnections: scored {conn} as {score}', ['conn' => $connection->toString(), 'score' => $score]);
       if ($score > 0) {
         $sorted->insert($connection, $score);
