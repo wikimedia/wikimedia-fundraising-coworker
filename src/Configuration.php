@@ -152,7 +152,16 @@ class Configuration {
   }
 
   public function loadOptions(array $options): void {
+    $aliases = [
+      // Old name => New name
+    ];
+
     foreach ($options as $cfgOption => $inputValue) {
+      if (isset($aliases[$cfgOption])) {
+        // trigger_error(sprintf('DEPRECATED: Configuration option "%s" renamed to "%s"', $cfgOption, $aliases[$cfgOption]), E_USER_DEPRECATED);
+        error_log(sprintf('DEPRECATED: Configuration option "%s" renamed to "%s"', $cfgOption, $aliases[$cfgOption]));
+        $cfgOption = $aliases[$cfgOption];
+      }
       $this->{$cfgOption} = $inputValue;
     }
   }
