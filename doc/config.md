@@ -39,16 +39,65 @@ export COWORKER_WORKER_IDLE=15
 coworker run
 ```
 
-## Option reference
+## Options: Connectivity
 
-### workerCleanupCount
+Coworker must send requests to CiviCRM. These options determine how it transmits requests.
 
-Whenever we hit the maximum number of workers, we have to remove some old workers. How many should we try to remove?
+### civicrmVersion
 
-* __CLI Option__: `-d workerCleanupCount=X`
-* __Environment Variable__: `COWORKER_GC_WORKERS`
-* __File Field__: `workerCleanupCount`
-* __Class Property__: `$workerCleanupCount`
+Only run if the local CiviCRM deployment meets this minimum requirement.
+
+* __CLI Option__: `-d civicrmVersion=X`
+* __Environment Variable__: _n/a_
+* __File Field__: `civicrmVersion`
+* __Class Property__: `$civicrmVersion`
+
+### pipeCommand
+
+External command used to start the pipe.
+
+* __CLI Option__: `--pipe=X`
+* __Environment Variable__: _n/a_
+* __File Field__: `pipeCommand`
+* __Class Property__: `$pipeCommand`
+
+## Options: Polling
+
+Coworker runs a control process to monitor CiviCRM. These options determine how it monitors.
+
+## pollInterval
+
+How often are we allowed to poll the queues for new items? (#seconds)
+
+Lower values will improve responsiveness - and increase the number of queries.
+
+Note that there may be multiple queues to poll, and each poll operation may take
+some #milliseconds. This number is not a simple `sleep()`; rather, it is a target.
+After doing a round of polling, we will sleep as long as necessary in
+order to meet the $pollInterval.
+
+* __CLI Option__: `-d pollInterval=X`
+* __Environment Variable__: _n/a_
+* __File Field__: `pollInterval`
+* __Class Property__: `$pollInterval`
+
+### pollQuery
+
+`coworker` must determine which queues to monitor.
+
+By default, it looks for queues which meet these two criteria:
+
+* `['status', '=', 'active']`
+* `['agent', 'CONTAINS', 'server']` (v5.68+) or `['runner', 'IS NOT EMPTY']` (v5.47-5.67)
+
+This option is an array-tree that will be passed to `Queue.get` (APIv4).
+
+* __CLI Option__: _n/a_
+* __Environment Variable__: _n/a_
+* __File Field__: `pollQuery`
+* __Class Property__: `$pollQuery`
+
+## Options: Logging
 
 ### logFile
 
@@ -105,6 +154,18 @@ One of: `debug|info|notice|warning|error|critical|alert|emergency`
 * __File Field__: `logLevel`
 * __Class Property__: `$logLevel`
 
+## Options: Worker management
+
+Coworker maintains a pool of reusable worker processes. These options determine when workers are started and stopped.
+
+### workerCleanupCount
+
+When we hit the maximum number of workers, we may need remove some idle processes. How many should we try to remove?
+
+* __CLI Option__: `-d workerCleanupCount=X`
+* __Environment Variable__: `COWORKER_GC_WORKERS`
+* __File Field__: `workerCleanupCount`
+* __Class Property__: `$workerCleanupCount`
 
 ### workerCount
 
@@ -146,6 +207,8 @@ If the worker is idle for $X seconds, then shut it down.
 * __File Field__: `workerTimeout`
 * __Class Property__: `$workerTimeout`
 
+## Options: Generic
+
 ### agentDuration
 
 Maximum amount of time (seconds) for which the overall system should run (inclusive of any/all workers).
@@ -158,53 +221,3 @@ After reaching this limit, no more workers will be started, and no more tasks wi
 * __Environment Variable__: `COWORKER_MAX_DURATION`
 * __File Field__: `agentDuration`
 * __Class Property__: `$agentDuration`
-
-### civicrmVersion
-
-Only run if the local CiviCRM deployment meets this minimum requirement.
-
-* __CLI Option__: `-d civicrmVersion=X`
-* __Environment Variable__: _n/a_
-* __File Field__: `civicrmVersion`
-* __Class Property__: `$civicrmVersion`
-
-### pipeCommand
-
-External command used to start the pipe.
-
-* __CLI Option__: `--pipe=X`
-* __Environment Variable__: _n/a_
-* __File Field__: `pipeCommand`
-* __Class Property__: `$pipeCommand`
-
-## pollInterval
-
-How often are we allowed to poll the queues for new items? (#seconds)
-
-Lower values will improve responsiveness - and increase the number of queries.
-
-Note that there may be multiple queues to poll, and each poll operation may take
-some #milliseconds. This number is not a simple `sleep()`; rather, it is a target.
-After doing a round of polling, we will sleep as long as necessary in
-order to meet the $pollInterval.
-
-* __CLI Option__: `-d pollInterval=X`
-* __Environment Variable__: _n/a_
-* __File Field__: `pollInterval`
-* __Class Property__: `$pollInterval`
-
-### pollQuery
-
-`coworker` must determine which queues to monitor.
-
-By default, it looks for queues which meet these two criteria:
-
-* `status=active`
-* `agent CONTAINS server` (v5.68+) or `runner IS NOT EMPTY` (v5.47-5.67)
-
-This filter is an array-tree that will be passed to `Queue.get` (APIv4).
-
-* __CLI Option__: _n/a_
-* __Environment Variable__: _n/a_
-* __File Field__: `pollQuery`
-* __Class Property__: `$pollQuery`

@@ -8,21 +8,6 @@ use function Clue\React\Block\await;
 class Configuration {
 
   /**
-   * Only if the local CiviCRM deployment meets this minimum requirement.
-   * @var string
-   *   Ex: '5.47.alpha1' for current Pipe/JSON-RPC format
-   *   Ex: '5.51.alpha1' for current Queue API
-   */
-  public $civicrmVersion = '5.51.alpha1';
-
-  /**
-   * Maximum number of workers that may be running at the same time.
-   *
-   * @var int
-   */
-  public $workerCount = 2;
-
-  /**
    * Maximum amount of time (seconds) for which the overall system should run (inclusive of any/all workers).
    *
    * After reaching this limit, no more workers will be started, and no more tasks
@@ -33,50 +18,24 @@ class Configuration {
   public $agentDuration = NULL;
 
   /**
-   * Maximum number of tasks to assign a single worker.
-   *
-   * After reaching this limit, no more tasks will be given to the worker.
-   *
-   * @var int
-   */
-  public $workerRequests = 10;
-
-  /**
-   * Maximum amount of time (seconds) for which a single worker should execute.
-   *
-   * After reaching this limit, no more tasks will be given to the worker.
-   *
-   * @var int
-   */
-  public $workerDuration = 10 * 60;
-
-  /**
-   * If the worker is idle for $X seconds, then shut it down.
-   *
-   * @var int
-   */
-  public $workerTimeout = 60;
-
-  /**
-   * Whenever we hit the maximum, we have to remove some old workers.
-   * How many should we try to remove?
-   *
-   * @var int
-   */
-  public $workerCleanupCount = 1;
-
-  /**
-   * External command used to start the pipe.
-   *
+   * Only if the local CiviCRM deployment meets this minimum requirement.
    * @var string
-   *   Ex: 'cv ev "Civi::pipe();"'
+   *   Ex: '5.47.alpha1' for current Pipe/JSON-RPC format
+   *   Ex: '5.51.alpha1' for current Queue API
    */
-  public $pipeCommand;
+  public $civicrmVersion = '5.51.alpha1';
 
   /**
    * @var string
    */
   public $logFile;
+
+  /**
+   * One of: text|json
+   *
+   * @var string
+   */
+  public $logFormat;
 
   /**
    * Level of information to write to log file.
@@ -86,6 +45,16 @@ class Configuration {
    * @var string
    */
   public $logLevel;
+
+  /**
+   * Should we enable logging for the internal-queue mechanism?
+   *
+   * After claiming a task, it is momentarily placed on an internal-queue while
+   * we find/setup resources for executing the task.
+   *
+   * @var bool
+   */
+  public $logInternalQueue = FALSE;
 
   /**
    * Should we enable polling-related debug info?
@@ -100,21 +69,12 @@ class Configuration {
   public $logPolling = FALSE;
 
   /**
-   * Should we enable logging for the internal-queue mechanism?
-   *
-   * After claiming a task, it is momentarily placed on an internal-queue while
-   * we find/setup resources for executing the task.
-   *
-   * @var bool
-   */
-  public $logInternalQueue = FALSE;
-
-  /**
-   * One of: text|json
+   * External command used to start the pipe.
    *
    * @var string
+   *   Ex: 'cv ev "Civi::pipe();"'
    */
-  public $logFormat;
+  public $pipeCommand;
 
   /**
    * How often are we allowed to poll the queues for new items? (#seconds)
@@ -140,6 +100,46 @@ class Configuration {
    * @var array
    */
   public $pollQuery;
+
+  /**
+   * Whenever we hit the maximum, we have to remove some old workers.
+   * How many should we try to remove?
+   *
+   * @var int
+   */
+  public $workerCleanupCount = 1;
+
+  /**
+   * Maximum number of workers that may be running at the same time.
+   *
+   * @var int
+   */
+  public $workerCount = 2;
+
+  /**
+   * Maximum amount of time (seconds) for which a single worker should execute.
+   *
+   * After reaching this limit, no more tasks will be given to the worker.
+   *
+   * @var int
+   */
+  public $workerDuration = 10 * 60;
+
+  /**
+   * Maximum number of tasks to assign a single worker.
+   *
+   * After reaching this limit, no more tasks will be given to the worker.
+   *
+   * @var int
+   */
+  public $workerRequests = 10;
+
+  /**
+   * If the worker is idle for $X seconds, then shut it down.
+   *
+   * @var int
+   */
+  public $workerTimeout = 60;
 
   public function __construct(array $values = []) {
     foreach ($values as $field => $value) {
