@@ -55,7 +55,7 @@ class Configuration {
    *
    * @var int
    */
-  public $maxWorkerIdle = 60;
+  public $workerTimeout = 60;
 
   /**
    * Whenever we hit the maximum, we have to remove some old workers.
@@ -157,6 +157,7 @@ class Configuration {
       'maxConcurrentWorkers' => 'workerCount',
       'maxWorkerDuration' => 'workerDuration',
       'maxWorkerRequests' => 'workerRequests',
+      'maxWorkerIdle' => 'workerTimeout',
     ];
 
     foreach ($options as $cfgOption => $inputValue) {

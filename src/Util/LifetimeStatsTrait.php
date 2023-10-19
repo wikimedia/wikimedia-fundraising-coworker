@@ -113,7 +113,7 @@ trait LifetimeStatsTrait {
    *   Higher values indicate longer periods of idleness.
    */
   public function getIdleRank(Configuration $configuration, int $scale): int {
-    return $this->idleSince ? floor($scale * $this->getIdleDuration() / $configuration->maxWorkerIdle) : 0;
+    return $this->idleSince ? floor($scale * $this->getIdleDuration() / $configuration->workerTimeout) : 0;
   }
 
   /**

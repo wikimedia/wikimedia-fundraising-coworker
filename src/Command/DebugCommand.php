@@ -23,7 +23,7 @@ class DebugCommand extends RunCommand {
 
     $config->logLevel = 'debug';
     $config->workerCount = 1;
-    $config->maxWorkerIdle = PipePool::QUEUE_INTERVAL / 2;
+    $config->workerTimeout = PipePool::QUEUE_INTERVAL / 2;
     $config->workerRequests = 1;
     $config->gcWorkers = 1;
 

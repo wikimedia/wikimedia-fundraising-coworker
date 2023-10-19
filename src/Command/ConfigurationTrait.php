@@ -36,7 +36,7 @@ trait ConfigurationTrait {
       'COWORKER_MAX_DURATION' => 'maxTotalDuration',
       'COWORKER_WORKER_REQUESTS' => 'workerRequests',
       'COWORKER_WORKER_DURATION' => 'workerDuration',
-      'COWORKER_WORKER_IDLE' => 'maxWorkerIdle',
+      'COWORKER_WORKER_IDLE' => 'workerTimeout',
       'COWORKER_GC_WORKERS' => 'gcWorkers',
     ];
 

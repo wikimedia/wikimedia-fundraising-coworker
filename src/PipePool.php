@@ -197,7 +197,7 @@ class PipePool {
   }
 
   /**
-   * Find any connections which have been active for more than ($maxWorkerIdle) seconds.
+   * Find any connections which have been active for more than ($workerTimeout) seconds.
    * Stop them.
    *
    * @return \React\Promise\PromiseInterface
@@ -205,7 +205,7 @@ class PipePool {
   private function cleanupIdleConnections(): PromiseInterface {
     $promises = [];
     foreach ($this->connections as $connection) {
-      if ($connection->isIdle() && $connection->getIdleDuration() > $this->configuration->maxWorkerIdle) {
+      if ($connection->isIdle() && $connection->getIdleDuration() > $this->configuration->workerTimeout) {
         $promises[] = $this->removeConnection($connection->id);
       }
     }
