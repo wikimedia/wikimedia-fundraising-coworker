@@ -32,10 +32,10 @@ coworker run -c /etc/coworker.yaml
 Similarly, you can set options before calling the command:
 
 ```bash
-export COWORKER_MAX_WORKERS=5
-export COWORKER_WORKER_DURATION=120
-export COWORKER_WORKER_REQUESTS=10
-export COWORKER_WORKER_IDLE=15
+export COWORKER_COUNT=5
+export COWORKER_DURATION=120
+export COWORKER_REQUESTS=10
+export COWORKER_TIMEOUT=15
 coworker run
 ```
 
@@ -172,7 +172,7 @@ When we hit the maximum number of workers, we may need remove some idle processe
 Maximum number of workers that may be running at the same time.
 
 * __CLI Option__: `-d workerCount=X`
-* __Environment Variable__: `COWORKER_MAX_WORKERS`
+* __Environment Variable__: `COWORKER_COUNT`
 * __File Field__: `workerCount`
 * __Class Property__: `$workerCount	`
 
@@ -183,7 +183,7 @@ Maximum number of tasks to assign a single worker.
 After reaching this limit, no more tasks will be given to the worker.
 
 * __CLI Option__: `-d workerRequests=X`
-* __Environment Variable__: `COWORKER_WORKER_REQUESTS`
+* __Environment Variable__: `COWORKER_REQUESTS`
 * __File Field__: `workerRequests`
 * __Class Property__: `$workerRequests`
 
@@ -194,7 +194,7 @@ Maximum amount of time (seconds) for which a single worker should execute.
 After reaching this limit, no more tasks will be given to the worker.
 
 * __CLI Option__: `-d workerDuration=X`
-* __Environment Variable__: `COWORKER_WORKER_DURATION`
+* __Environment Variable__: `COWORKER_DURATION`
 * __File Field__: `workerDuration`
 * __Class Property__: `$workerDuration`
 
@@ -203,7 +203,7 @@ After reaching this limit, no more tasks will be given to the worker.
 If the worker is idle for $X seconds, then shut it down.
 
 * __CLI Option__: `-d workerTimeout=X`
-* __Environment Variable__: `COWORKER_WORKER_IDLE`
+* __Environment Variable__: `COWORKER_TIMEOUT`
 * __File Field__: `workerTimeout`
 * __Class Property__: `$workerTimeout`
 
@@ -218,6 +218,6 @@ After reaching this limit, no more workers will be started, and no more tasks wi
 (This option is intended to put a boundary when running E2E tests on coworker. It should not be needed in regular usage.)
 
 * __CLI Option__: `-d agentDuration=X`
-* __Environment Variable__: `COWORKER_MAX_DURATION`
+* __Environment Variable__: `COWORKER_AGENT_DURATION`
 * __File Field__: `agentDuration`
 * __Class Property__: `$agentDuration`

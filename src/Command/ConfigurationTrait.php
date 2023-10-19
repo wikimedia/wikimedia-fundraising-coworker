@@ -31,13 +31,24 @@ trait ConfigurationTrait {
       'pipe' => 'pipeCommand',
       'log' => 'logFile',
     ];
+    $envMapDepr = [
+      'COWORKER_MAX_DURATION' => 'COWORKER_AGENT_DURATION',
+      'COWORKER_MAX_WORKERS' => 'COWORKER_COUNT',
+      'COWORKER_WORKER_REQUESTS' => 'COWORKER_REQUESTS',
+      'COWORKER_WORKER_DURATION' => 'COWORKER_DURATION',
+      'COWORKER_WORKER_IDLE' => 'COWORKER_TIMEOUT',
+    ];
     $envMap = [
-      'COWORKER_MAX_WORKERS' => 'workerCount',
-      'COWORKER_MAX_DURATION' => 'agentDuration',
-      'COWORKER_WORKER_REQUESTS' => 'workerRequests',
-      'COWORKER_WORKER_DURATION' => 'workerDuration',
-      'COWORKER_WORKER_IDLE' => 'workerTimeout',
+      // Convention: "workerFoo" => "COWORKER_FOO"
+      'COWORKER_COUNT' => 'workerCount',
+      'COWORKER_REQUESTS' => 'workerRequests',
+      'COWORKER_DURATION' => 'workerDuration',
+      'COWORKER_TIMEOUT' => 'workerTimeout',
       'COWORKER_GC_WORKERS' => 'workerCleanupCount',
+
+      // For all others: "fooBar" => "COWORKER_FOO_BAR"
+      'COWORKER_AGENT_DURATION' => 'agentDuration',
+      'COWORKER_POLL_INTERVAL' => 'pollInterval',
     ];
 
     $cfg = new Configuration();
@@ -66,6 +77,13 @@ trait ConfigurationTrait {
       }
     }
 
+    foreach ($envMapDepr as $envVarOld => $envVarNew) {
+      $envValue = getenv($envVarOld);
+      if ($envValue !== FALSE) {
+        error_log(sprintf('DEPRECATED: Environment variable "%s" renamed to "%s"', $envVarOld, $envVarNew));
+        $cfg->{$envMap[$envVarNew]} = $envValue;
+      }
+    }
     foreach ($envMap as $envVar => $cfgOption) {
       $envValue = getenv($envVar);
       if ($envValue !== FALSE) {
