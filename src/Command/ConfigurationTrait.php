@@ -78,7 +78,7 @@ trait ConfigurationTrait {
     }
 
     if (empty($input->getOption('pipe')) && empty($input->getOption('web')) && empty($cfg->pipeCommand)) {
-      $cfg->pipeCommand = 'cv ev "Civi::pipe();"';
+      $cfg->pipeCommand = 'cv pipe';
     }
 
     foreach ($optionMap as $inputOption => $cfgOption) {

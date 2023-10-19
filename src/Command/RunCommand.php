@@ -37,7 +37,7 @@ class RunCommand extends Command {
         "\n" .
         "<comment>Examples: Pipe (Shell/SSH/etc):</comment>\n" .
         "  coworker run\n" .
-        "  coworker run --pipe='cv ev \"Civi::pipe();\"'\n" .
+        "  coworker run --pipe='cv pipe'\n" .
         "  coworker run --pipe='drush ev \"civicrm_initialize(); Civi::pipe();\"' \n" .
         "  coworker run --pipe='wp eval \"civicrm_initialize(); Civi::pipe();\"'\n" .
         //  "\n" .
