@@ -50,17 +50,3 @@ If the connection succeeds, then `coworker` will monitor CiviCRM for new tasks a
 * [Connecting to CiviCRM](doc/connect.md)
 * [Configuring coworker](doc/config.md)
 * [Development](doc/develop.md)
-
-# Known limitations
-
-* If you are adding `coworker` into an existing `composer` project (eg Drupal 8+), it is conceivable to download via
-  `composer require civicrm/coworker`.  However, this technique may not serve you well in the long-run.  Why?
-  Internally, `coworker` is built with [ReactPHP](https://reactphp.org) - which is an excellent framework for juggling
-  concurrent tasks, but it is qualitatively very different from a traditional PHP application (like Drupal).  To
-  minimize dependency-conflicts and confusion, one should keep a clear, clean separation between these frameworks.  The
-  techniques described earlier ("[Download](#download)") strike a balance: separating the frameworks while also allowing
-  interoperability and co-deployment.
-    * _Idea: If someone really wants the benefits of `composer require`/`composer update`, then
-      please look at setting up a bridge-project, eg `composer require civicrm/coworker-phar-drupal`.
-      A bridge-project would download the PHAR, add a wrapper in `vendor/bin/coworker`, and change the
-      default configuration to use a drush pipe._
