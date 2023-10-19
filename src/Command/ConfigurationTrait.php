@@ -13,6 +13,7 @@ use Monolog\Logger;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Yaml\Yaml;
 
 trait ConfigurationTrait {
 
@@ -55,6 +56,15 @@ trait ConfigurationTrait {
           $cfg->{$cfgOption} = $inputValue;
         }
       }
+      elseif (preg_match(';\.(yaml|yml)$;', $configFile)) {
+        $parse = Yaml::parseFile($configFile);
+        if (!is_array($parse)) {
+          throw new \RuntimeException("Malformed configuration file: $configFile");
+        }
+        foreach ($parse as $cfgOption => $inputValue) {
+          $cfg->{$cfgOption} = $inputValue;
+        }
+      }
       else {
         $output->writeln("<error>Skipped unrecognized config file: $configFile</error>");
       }
@@ -67,9 +77,13 @@ trait ConfigurationTrait {
       }
     }
 
+    if (empty($input->getOption('pipe')) && empty($input->getOption('web')) && empty($cfg->pipeCommand)) {
+      $cfg->pipeCommand = 'cv ev "Civi::pipe();"';
+    }
+
     foreach ($optionMap as $inputOption => $cfgOption) {
       $inputValue = $input->getOption($inputOption);
-      if ($inputValue !== '') {
+      if ($inputValue !== '' && $inputValue !== NULL) {
         $cfg->{$cfgOption} = $inputValue;
       }
     }

@@ -51,13 +51,6 @@ class RunCommand extends Command {
     parent::configure();
   }
 
-  protected function initialize(InputInterface $input, OutputInterface $output) {
-    parent::initialize($input, $output);
-    if (empty($input->getOption('pipe')) && empty($input->getOption('web'))) {
-      $input->setOption('pipe', 'cv ev "Civi::pipe();"');
-    }
-  }
-
   protected function execute(InputInterface $input, OutputInterface $output) {
     $runtime = Runtime::get();
     $runtime->io = new SymfonyStyle($input, $output);
