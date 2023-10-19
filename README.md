@@ -31,6 +31,7 @@ coworker run [CONNECTION_OPTIONS]
 coworker run
 coworker run --cwd=/var/www/example.com 
 coworker run --pipe='drush @example.com ev "civicrm_initialize(); Civi::pipe();"'
+coworker run --web='https://example.com/civicrm/queue?token=XXX'
 ```
 
 By default, `coworker run` will attempt to auto-detect a local CiviCRM instance from the current folder. However, you
