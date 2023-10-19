@@ -26,12 +26,22 @@ function queue_example_reset(): void {
  *   Ex: ['contactId' => 123, 'domainId' => 1]
  */
 function queue_example_fill(string $name, array $logValues, $runAs = NULL): void {
-  /** @var CRM_Queue_Queue $queue */
-  $queue = Civi::queue(QUEUE_EXAMPLE_PREFIX . $name, [
+  $specs = [];
+  $specs['old'] = [
     'type' => 'SqlParallel',
-    'runner' => 'task',
+    'runner' => 'task', /* Works on 5.68+ but emits deprecation notice... so nicer to use the other form... */
     'error' => 'delete',
-  ]);
+  ];
+  $specs['new'] = [
+    'type' => 'SqlParallel',
+    'agent' => 'server',
+    'payload' => 'task',
+    'error' => 'delete',
+  ];
+
+  /** @var CRM_Queue_Queue $queue */
+  $queue = Civi::queue(QUEUE_EXAMPLE_PREFIX . $name,
+    version_compare(CRM_Utils_System::version(), '5.68.alpha', '<') ? $specs['old'] : $specs['new']);
   foreach ($logValues as $offset => $logValue) {
     $task = new CRM_Queue_Task('queue_example_logme', [$logValue]);
     $task->runAs = $runAs;
