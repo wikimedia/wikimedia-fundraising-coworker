@@ -33,7 +33,7 @@ class Queue5Test extends TestCase {
     $this->cvEval('queue_example_fill("a", range(1,5));');
     $this->execute('run', [
       '--pipe' => $this->cvCmd('ev "Civi::pipe();"'),
-      '--define' => ['maxTotalDuration=10'],
+      '--define' => ['agentDuration=10'],
     ]);
     $this->assertExampleJsonOutput($this->logFile, [
       ['v' => 1, 'u' => NULL, 'd' => 1],

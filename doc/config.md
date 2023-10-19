@@ -146,7 +146,7 @@ If the worker is idle for $X seconds, then shut it down.
 * __File Field__: `workerTimeout`
 * __Class Property__: `$workerTimeout`
 
-### maxTotalDuration
+### agentDuration
 
 Maximum amount of time (seconds) for which the overall system should run (inclusive of any/all workers).
 
@@ -154,10 +154,10 @@ After reaching this limit, no more workers will be started, and no more tasks wi
 
 (This option is intended to put a boundary when running E2E tests on coworker. It should not be needed in regular usage.)
 
-* __CLI Option__: `-d maxTotalDuration=X`
+* __CLI Option__: `-d agentDuration=X`
 * __Environment Variable__: `COWORKER_MAX_DURATION`
-* __File Field__: `maxTotalDuration`
-* __Class Property__: `$maxTotalDuration`
+* __File Field__: `agentDuration`
+* __Class Property__: `$agentDuration`
 
 ### minimumCivicrmVersion
 

@@ -19,7 +19,7 @@ class RunCommandUnitTest extends TestCase {
   public function testStartup() {
     $tester = $this->execute('run', [
       '--pipe' => $this->getPath('scripts/dummy-jsonrpc.php'),
-      '--define' => ['maxTotalDuration=3', 'logPolling=1'],
+      '--define' => ['agentDuration=3', 'logPolling=1'],
     ]);
     $this->assertEquals(0, $tester->getStatusCode());
 
@@ -39,7 +39,7 @@ class RunCommandUnitTest extends TestCase {
   //     $this->execute('run', [
   //       '--web' => 'https://example.com',
   //       '--pipe' => $this->getPath('scripts/dummy-jsonrpc.php'),
-  //       '--define' => ['maxTotalDuration=3'],
+  //       '--define' => ['agentDuration=3'],
   //     ]);
   //     $this->fail('Expected exception!');
   //   }

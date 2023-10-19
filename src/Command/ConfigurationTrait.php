@@ -33,7 +33,7 @@ trait ConfigurationTrait {
     ];
     $envMap = [
       'COWORKER_MAX_WORKERS' => 'workerCount',
-      'COWORKER_MAX_DURATION' => 'maxTotalDuration',
+      'COWORKER_MAX_DURATION' => 'agentDuration',
       'COWORKER_WORKER_REQUESTS' => 'workerRequests',
       'COWORKER_WORKER_DURATION' => 'workerDuration',
       'COWORKER_WORKER_IDLE' => 'workerTimeout',

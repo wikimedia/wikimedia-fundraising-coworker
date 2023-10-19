@@ -30,7 +30,7 @@ class Configuration {
    *
    * @var int|null
    */
-  public $maxTotalDuration = NULL;
+  public $agentDuration = NULL;
 
   /**
    * Maximum number of tasks to assign a single worker.
@@ -159,6 +159,7 @@ class Configuration {
       'maxWorkerRequests' => 'workerRequests',
       'maxWorkerIdle' => 'workerTimeout',
       'gcWorkers' => 'workerCleanupCount',
+      'maxTotalDuration' => 'agentDuration',
     ];
 
     foreach ($options as $cfgOption => $inputValue) {

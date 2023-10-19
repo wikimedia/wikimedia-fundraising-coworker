@@ -39,7 +39,7 @@ class MultiUserQueueTest extends TestCase {
 
     $this->execute('run', [
       '--pipe' => $this->cvCmd('ev "Civi::pipe();"'),
-      '--define' => ['maxTotalDuration=10'],
+      '--define' => ['agentDuration=10'],
     ]);
     $this->assertExampleJsonOutput($this->logFile, [
       ['v' => 1, 'u' => $adminCid, 'd' => 1],
