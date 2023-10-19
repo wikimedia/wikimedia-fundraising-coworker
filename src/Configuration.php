@@ -151,6 +151,12 @@ class Configuration {
     throw new \RuntimeException(sprintf('Unrecognized property: %s::$%s', __CLASS__, $name));
   }
 
+  public function loadOptions(array $options): void {
+    foreach ($options as $cfgOption => $inputValue) {
+      $this->{$cfgOption} = $inputValue;
+    }
+  }
+
   /**
    * After getting a control-channel, inspect the system and fine-tune the configuration.
    *

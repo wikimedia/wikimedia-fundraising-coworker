@@ -52,18 +52,14 @@ trait ConfigurationTrait {
         if (!is_array($parse)) {
           throw new \RuntimeException("Malformed configuration file: $configFile");
         }
-        foreach ($parse as $cfgOption => $inputValue) {
-          $cfg->{$cfgOption} = $inputValue;
-        }
+        $cfg->loadOptions($parse);
       }
       elseif (preg_match(';\.(yaml|yml)$;', $configFile)) {
         $parse = Yaml::parseFile($configFile);
         if (!is_array($parse)) {
           throw new \RuntimeException("Malformed configuration file: $configFile");
         }
-        foreach ($parse as $cfgOption => $inputValue) {
-          $cfg->{$cfgOption} = $inputValue;
-        }
+        $cfg->loadOptions($parse);
       }
       else {
         $output->writeln("<error>Skipped unrecognized config file: $configFile</error>");
