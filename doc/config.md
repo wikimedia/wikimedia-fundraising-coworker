@@ -27,25 +27,66 @@ coworker run -c /etc/coworker.yaml
 
 > __TIP__: At time of writing, coworker does not read any files by default. It will only read a file if instructed to do so.
 
-## Options
+## Environment variables
 
-### minimumCivicrmVersion
+Similarly, you can set options before calling the command:
 
-Only run if the local CiviCRM deployment meets this minimum requirement.
+```bash
+export COWORKER_MAX_WORKERS=5
+export COWORKER_WORKER_DURATION=120
+export COWORKER_WORKER_REQUESTS=10
+export COWORKER_WORKER_IDLE=15
+coworker run
+```
 
-* __Class Property__: `$minimumCivicrmVersion`
-* __File Field__: `minimumCivicrmVersion`
+## Option reference
+
+### gcWorkers
+
+Whenever we hit the maximum number of workers, we have to remove some old workers. How many should we try to remove?
+
+* __CLI Option__: `-d gcWorkers=X`
+* __Environment Variable__: `COWORKER_GC_WORKERS`
+* __File Field__: `gcWorkers`
+* __Class Property__: `$gcWorkers`
+
+### logFile
+
+Store logs in a file
+
+* __CLI Option__: `--log=X`
 * __Environment Variable__: _n/a_
-* __CLI Option__: `-d minimumCivicrmVersion=X`
+* __File Field__: `logFile`
+* __Class Property__: `$logFile`
+
+### logLevel
+
+Level of information to write to log file.
+
+One of: `debug|info|notice|warning|error|critical|alert|emergency`
+
+* __CLI Option__: `-v` or `-vv`
+* __Environment Variable__: _n/a_
+* __File Field__: `logLevel`
+* __Class Property__: `$logLevel`
+
+### logFormat
+
+One of: `text|json`
+
+* __CLI Option__: `-d logFormat=X`
+* __Environment Variable__: _n/a_
+* __File Field__: `logFormat`
+* __Class Property__: `$logFormat`
 
 ### maxConcurrentWorkers
 
 Maximum number of workers that may be running at the same time.
 
-* __Class Property__: `$maxConcurrentWorkers`
-* __File Field__: `maxConcurrentWorkers`
-* __Environment Variable__: `COWORKER_MAX_WORKERS`
 * __CLI Option__: `-d maxConcurrentWorkers=X`
+* __Environment Variable__: `COWORKER_MAX_WORKERS`
+* __File Field__: `maxConcurrentWorkers`
+* __Class Property__: `$maxConcurrentWorkers`
 
 ### maxWorkerRequests
 
@@ -53,10 +94,10 @@ Maximum number of tasks to assign a single worker.
 
 After reaching this limit, no more tasks will be given to the worker.
 
-* __Class Property__: `$maxWorkerRequests`
-* __File Field__: `maxWorkerRequests`
-* __Environment Variable__: `COWORKER_WORKER_REQUESTS`
 * __CLI Option__: `-d maxWorkerRequests=X`
+* __Environment Variable__: `COWORKER_WORKER_REQUESTS`
+* __File Field__: `maxWorkerRequests`
+* __Class Property__: `$maxWorkerRequests`
 
 ### maxWorkerDuration
 
@@ -64,19 +105,19 @@ Maximum amount of time (seconds) for which a single worker should execute.
 
 After reaching this limit, no more tasks will be given to the worker.
 
-* __Class Property__: `$maxWorkerDuration`
-* __File Field__: `maxWorkerDuration`
-* __Environment Variable__: `COWORKER_WORKER_DURATION`
 * __CLI Option__: `-d maxWorkerDuration=X`
+* __Environment Variable__: `COWORKER_WORKER_DURATION`
+* __File Field__: `maxWorkerDuration`
+* __Class Property__: `$maxWorkerDuration`
 
 ### maxWorkerIdle
 
 If the worker is idle for $X seconds, then shut it down.
 
-* __Class Property__: `$maxWorkerIdle`
-* __File Field__: `maxWorkerIdle`
-* __Environment Variable__: `COWORKER_WORKER_IDLE`
 * __CLI Option__: `-d maxWorkerIdle=X`
+* __Environment Variable__: `COWORKER_WORKER_IDLE`
+* __File Field__: `maxWorkerIdle`
+* __Class Property__: `$maxWorkerIdle`
 
 ### maxTotalDuration
 
@@ -86,56 +127,25 @@ After reaching this limit, no more workers will be started, and no more tasks wi
 
 (This option is intended to put a boundary when running E2E tests on coworker. It should not be needed in regular usage.)
 
-* __Class Property__: `$maxTotalDuration`
-* __File Field__: `maxTotalDuration`
-* __Environment Variable__: `COWORKER_MAX_DURATION`
 * __CLI Option__: `-d maxTotalDuration=X`
+* __Environment Variable__: `COWORKER_MAX_DURATION`
+* __File Field__: `maxTotalDuration`
+* __Class Property__: `$maxTotalDuration`
 
-### gcWorkers
+### minimumCivicrmVersion
 
-Garbage collection count
+Only run if the local CiviCRM deployment meets this minimum requirement.
 
-Whenever we hit the maximum, we have to remove some old workers. How many should we try to remove?
-
-* __Class Property__: `$gcWorkers`
-* __File Field__: `gcWorkers`
-* __Environment Variable__: `COWORKER_GC_WORKERS`
-* __CLI Option__: `-d gcWorkers=X`
+* __CLI Option__: `-d minimumCivicrmVersion=X`
+* __Environment Variable__: _n/a_
+* __File Field__: `minimumCivicrmVersion`
+* __Class Property__: `$minimumCivicrmVersion`
 
 ### pipeCommand
 
 External command used to start the pipe.
 
-* __Class Property__: `$pipeCommand`
-* __File Field__: `pipeCommand`
-* __Environment Variable__: _n/a_
 * __CLI Option__: `--pipe=X`
-
-### logFile
-
-Store logs in a file
-
-* __Class Property__: `$logFile`
-* __File Field__: `logFile`
 * __Environment Variable__: _n/a_
-* __CLI Option__: `--log=X`
-
-### logLevel
-
-Level of information to write to log file.
-
-One of: `debug|info|notice|warning|error|critical|alert|emergency`
-
-* __Class Property__: `$logLevel`
-* __File Field__: `logLevel`
-* __Environment Variable__: _n/a_
-* __CLI Option__: `-v` or `-vv`
-
-### logFormat
-
-One of: `text|json`
-
-* __Class Property__: `$logFormat`
-* __File Field__: `logFormat`
-* __Environment Variable__: _n/a_
-* __CLI Option__: `-d logFormat=X`
+* __File Field__: `pipeCommand`
+* __Class Property__: `$pipeCommand`
