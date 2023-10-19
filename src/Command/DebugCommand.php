@@ -22,7 +22,7 @@ class DebugCommand extends RunCommand {
     // It's good to restart after each request - because it ensures that recently edited PHP files will be reloaded.
 
     $config->logLevel = 'debug';
-    $config->maxConcurrentWorkers = 1;
+    $config->workerCount = 1;
     $config->maxWorkerIdle = PipePool::QUEUE_INTERVAL / 2;
     $config->maxWorkerRequests = 1;
     $config->gcWorkers = 1;

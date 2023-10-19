@@ -32,7 +32,7 @@ trait ConfigurationTrait {
       'log' => 'logFile',
     ];
     $envMap = [
-      'COWORKER_MAX_WORKERS' => 'maxConcurrentWorkers',
+      'COWORKER_MAX_WORKERS' => 'workerCount',
       'COWORKER_MAX_DURATION' => 'maxTotalDuration',
       'COWORKER_WORKER_REQUESTS' => 'maxWorkerRequests',
       'COWORKER_WORKER_DURATION' => 'maxWorkerDuration',

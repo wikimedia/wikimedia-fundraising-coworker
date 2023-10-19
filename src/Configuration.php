@@ -20,7 +20,7 @@ class Configuration {
    *
    * @var int
    */
-  public $maxConcurrentWorkers = 2;
+  public $workerCount = 2;
 
   /**
    * Maximum amount of time (seconds) for which the overall system should run (inclusive of any/all workers).
@@ -154,6 +154,7 @@ class Configuration {
   public function loadOptions(array $options): void {
     $aliases = [
       // Old name => New name
+      'maxConcurrentWorkers' => 'workerCount',
     ];
 
     foreach ($options as $cfgOption => $inputValue) {

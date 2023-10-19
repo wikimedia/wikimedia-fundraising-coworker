@@ -13,7 +13,7 @@ CiviCRM processes live and how much work they can do. Configuration options can 
 Create a YAML file such as `/etc/coworker.yaml`:
 
 ```yaml
-maxConcurrentWorkers: 5
+workerCount: 5
 maxWorkerDuration: 120
 maxWorkerRequests: 10
 maxWorkerIdle: 15
@@ -106,14 +106,14 @@ One of: `debug|info|notice|warning|error|critical|alert|emergency`
 * __Class Property__: `$logLevel`
 
 
-### maxConcurrentWorkers
+### workerCount
 
 Maximum number of workers that may be running at the same time.
 
-* __CLI Option__: `-d maxConcurrentWorkers=X`
+* __CLI Option__: `-d workerCount=X`
 * __Environment Variable__: `COWORKER_MAX_WORKERS`
-* __File Field__: `maxConcurrentWorkers`
-* __Class Property__: `$maxConcurrentWorkers`
+* __File Field__: `workerCount`
+* __Class Property__: `$workerCount	`
 
 ### maxWorkerRequests
 

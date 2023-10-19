@@ -142,11 +142,11 @@ class PipePool {
       }
 
       // We want to make a new connection... Is there room?
-      if (count($this->connections) >= $this->configuration->maxConcurrentWorkers) {
+      if (count($this->connections) >= $this->configuration->workerCount) {
         $this->cleanupConnections($this->configuration->gcWorkers);
       }
 
-      if (count($this->connections) >= $this->configuration->maxConcurrentWorkers) {
+      if (count($this->connections) >= $this->configuration->workerCount) {
         // Not ready yet. Keep $todo in the queue and wait for later.
         return;
       }
@@ -228,7 +228,7 @@ class PipePool {
    * @return bool
    */
   public function hasOpenSlot(): bool {
-    if (count($this->connections) < $this->configuration->maxConcurrentWorkers) {
+    if (count($this->connections) < $this->configuration->workerCount) {
       return TRUE;
     }
     foreach ($this->connections as $connection) {
