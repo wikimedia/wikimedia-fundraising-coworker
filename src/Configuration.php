@@ -139,7 +139,7 @@ class Configuration {
    *
    * @var array
    */
-  public $queueFilter;
+  public $pollQuery;
 
   public function __construct(array $values = []) {
     foreach ($values as $field => $value) {
@@ -160,6 +160,7 @@ class Configuration {
       'maxWorkerIdle' => 'workerTimeout',
       'gcWorkers' => 'workerCleanupCount',
       'maxTotalDuration' => 'agentDuration',
+      'queueFilter' => 'pollQuery',
     ];
 
     foreach ($options as $cfgOption => $inputValue) {
@@ -181,8 +182,8 @@ class Configuration {
    * @throws \Exception
    */
   public function onConnect(array $welcome, CiviClientInterface $ctlChannel) {
-    if ($this->queueFilter === NULL) {
-      $this->queueFilter = $this->pickQueueFilter($ctlChannel);
+    if ($this->pollQuery === NULL) {
+      $this->pollQuery = $this->pickQueueFilter($ctlChannel);
     }
   }
 

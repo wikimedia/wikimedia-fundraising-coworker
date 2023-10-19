@@ -127,7 +127,7 @@ class CiviQueueWatcher {
     }
     $this->logger->debug('Poll queues', ['isPolling' => TRUE]);
     $this->lastFillTime = microtime(1);
-    return $this->ctl->api4('Queue', 'get', $this->config->queueFilter)
+    return $this->ctl->api4('Queue', 'get', $this->config->pollQuery)
       ->then(function ($queues) {
         foreach ($queues as $queue) {
           $this->addStep(['runQueueItem', $queue['name']]);

@@ -193,7 +193,7 @@ order to meet the $pollInterval.
 * __File Field__: `pollInterval`
 * __Class Property__: `$pollInterval`
 
-### queueFilter
+### pollQuery
 
 `coworker` must determine which queues to monitor.
 
@@ -206,5 +206,5 @@ This filter is an array-tree that will be passed to `Queue.get` (APIv4).
 
 * __CLI Option__: _n/a_
 * __Environment Variable__: _n/a_
-* __File Field__: `queueFilter`
-* __Class Property__: `$queueFilter`
+* __File Field__: `pollQuery`
+* __Class Property__: `$pollQuery`
