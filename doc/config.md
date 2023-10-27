@@ -55,6 +55,8 @@ Coworker must send requests to CiviCRM. These options determine how it transmits
 
 External command used to start the pipe.
 
+The special value `*BUILTIN*` indicates that `coworker` should use its own mechanism to bootstrap CiviCRM (per `cv-lib`).
+
 * __CLI Option__: `--pipe=X`
 * __Environment Variable__: _n/a_
 * __File Field__: `pipeCommand`

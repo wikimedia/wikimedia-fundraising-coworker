@@ -34,9 +34,9 @@ coworker run --pipe='drush @example.com ev "civicrm_initialize(); Civi::pipe();"
 coworker run --web='https://example.com/civicrm/queue?token=XXX'
 ```
 
-By default, `coworker run` will attempt to auto-detect a local CiviCRM instance from the current folder. However, you
-may need to configure the [`CONNECTION_OPTIONS`](doc/connect.md) -- especially if you do not have `cv` or if you are
-running remotely.
+By default, `coworker run` will attempt to auto-detect a local CiviCRM instance from the current folder (based on [cv bootstrap
+process](https://github.com/civicrm/cv/#bootstrap)).  However, you may need to configure the [`CONNECTION_OPTIONS`](doc/connect.md) -- especially if
+using a multisite CMS or connecting to a remote server.
 
 If the connection succeeds, then `coworker` will monitor CiviCRM for new tasks and execute them.
 

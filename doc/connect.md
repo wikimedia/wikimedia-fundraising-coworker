@@ -29,9 +29,13 @@ There are several ways to start `coworker` with a CiviCRM pipe.  These may use [
 [wp-cli](https://wp-cli.org/), as in:
 
 ```bash
+## Start with coworker's built-in pipe adapter
+cd /var/www/example.com/web
+coworker run
+
 ## Start with cv
 cd /var/www/example.com/web
-coworker run --pipe='cv ev "Civi::pipe();"'
+coworker run --pipe='cv pipe'
 
 ## Start with drush
 cd /var/www/example.com/web

@@ -4,7 +4,7 @@
 
 * Required: PHP v7.3+
 * Required: CiviCRM 5.51
-* Recommended: `cv`, `drush`, or `wp-cli`
+* Suggested: `cv`, `drush`, or `wp-cli`
 
 <a name="phar-unix"></a>
 ## Install `coworker.phar` as system-wide tool (Linux/BSD/macOS)
