@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+define('COWORKER_MAIN', __FILE__);
 ini_set('display_errors', 1);
 if (PHP_SAPI !== 'cli') {
   printf("coworker is a command-line tool. It is designed to run with PHP_SAPI \"%s\". The active PHP_SAPI is \"%s\".\n", 'cli', PHP_SAPI);

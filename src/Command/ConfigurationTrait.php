@@ -92,7 +92,7 @@ trait ConfigurationTrait {
     }
 
     if (empty($input->getOption('pipe')) && empty($input->getOption('web')) && empty($cfg->pipeCommand)) {
-      $cfg->pipeCommand = 'cv pipe';
+      $cfg->pipeCommand = '*BUILTIN*';
     }
 
     foreach ($optionMap as $inputOption => $cfgOption) {
@@ -117,6 +117,15 @@ trait ConfigurationTrait {
       else {
         $cfg->logLevel = 'notice';
       }
+    }
+
+    if ($cfg->pipeCommand === '*BUILTIN*') {
+      $miniPipe = dirname(COWORKER_MAIN) . DIRECTORY_SEPARATOR . 'minipipe';
+      if (!file_exists($miniPipe)) {
+        throw new \RuntimeException("Cannot use builtin pipe adapter. File note found: $miniPipe");
+      }
+      $requireMiniPipe = sprintf("require_once %s;", var_export($miniPipe, 1));
+      $cfg->pipeCommand = sprintf('php -r %s', escapeshellarg($requireMiniPipe));
     }
 
     return $cfg;
