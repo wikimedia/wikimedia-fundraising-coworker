@@ -1,0 +1,42 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * minipipe: Bootstrap CiviCRM and start the pipe mode.
+ */
+
+ini_set('display_errors', 1);
+if (PHP_SAPI !== 'cli') {
+  printf("minipipe is a command-line tool. It is designed to run with PHP_SAPI \"%s\". The active PHP_SAPI is \"%s\".\n", 'cli', PHP_SAPI);
+  printf("TIP: In a typical shell environment, the \"php\" command should execute php-cli - not php-cgi or similar.\n");
+  exit(1);
+}
+if (version_compare(PHP_VERSION, '7.3', '<')) {
+  echo "minipipe requires PHP 7.3+\n";
+  exit(2);
+}
+
+// We only want autoloading for cv-lib. Anything else could have namespace conflicts.
+$rule = [
+  // 'path' => implode(DIRECTORY_SEPARATOR, [getenv('HOME'), 'src', 'cv', 'lib', 'src', '']),
+  'path' => implode(DIRECTORY_SEPARATOR, [rtrim(dirname(__DIR__), DIRECTORY_SEPARATOR), 'vendor', 'civicrm', 'cv-lib', 'src', '']),
+  'prefix' => 'Civi\\Cv\\',
+  'len' => strlen('Civi\\Cv\\')
+];
+spl_autoload_register(function ($class) use ($rule) {
+  if ($rule['prefix'] !== substr($class, 0, $rule['len'])) {
+    return;
+  }
+  $suffix = substr($class, $rule['len']);
+  $file = $rule['path'] . str_replace('\\', DIRECTORY_SEPARATOR, $suffix) . '.php';
+  require_once $file;
+});
+
+if (getenv('CIVICRM_SETTINGS') && !getenv('CIVICRM_BOOT')) {
+  \Civi\Cv\Bootstrap::singleton()->boot();
+}
+else {
+  \Civi\Cv\CmsBootstrap::singleton()->bootCms()->bootCivi();
+}
+
+\Civi::pipe();
