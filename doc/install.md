@@ -2,7 +2,7 @@
 
 ## Requirements
 
-* Required: PHP v7.2+
+* Required: PHP v7.3+
 * Required: CiviCRM 5.51
 * Recommended: `cv`, `drush`, or `wp-cli`
 
