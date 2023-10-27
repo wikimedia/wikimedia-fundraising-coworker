@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e294153b0898f50b58d0b9cad28cfbff",
+    "content-hash": "7ef3e05212e0f8c94d013b7558c9474e",
     "packages": [
         {
             "name": "bramus/ansi-php",
@@ -95,6 +95,48 @@
                 "source": "https://github.com/bramus/monolog-colored-line-formatter/tree/3.0.6"
             },
             "time": "2021-12-05T09:10:49+00:00"
+        },
+        {
+            "name": "civicrm/cv-lib",
+            "version": "v0.3.48",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/civicrm/cv-lib.git",
+                "reference": "40b85edaa8a1ceefe3230fe4cea8289ecc2ef9c7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/civicrm/cv-lib/zipball/40b85edaa8a1ceefe3230fe4cea8289ecc2ef9c7",
+                "reference": "40b85edaa8a1ceefe3230fe4cea8289ecc2ef9c7",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=7.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Civi\\Cv\\": [
+                        "src/"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tim Otten",
+                    "email": "totten@civicrm.org"
+                }
+            ],
+            "description": "Bootstrap library for CiviCRM CLI tools",
+            "support": {
+                "source": "https://github.com/civicrm/cv-lib/tree/v0.3.48"
+            },
+            "time": "2023-07-13T12:37:59+00:00"
         },
         {
             "name": "clue/block-react",
