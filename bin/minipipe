@@ -2,7 +2,17 @@
 <?php
 
 /**
- * minipipe: Bootstrap CiviCRM and start the pipe mode.
+ * About: `minipipe` boots CiviCRM and starts the pipe mode.
+ * Usage: minipipe [NEGOTIATION_FLAGS]
+ * Examples:
+ *   php -r 'require_once "phar://path/to/coworker.phar/bin/minipipe";'
+ *   php -r 'require_once "phar://path/to/coworker.phar/bin/minipipe";' ulv
+ *   php /path/to/coworker-repo/bin/minipipe
+ *   php /path/to/coworker-repo/bin/minipipe ulv
+ *
+ * `minipipe` is basically the same as `cv pipe`, except that:
+ *   - It doesn't need namespace-prefixing. (It only has classloading for `cv-lib`.)
+ *   - It can be embedded inside `coworker.phar`.
  */
 
 ini_set('display_errors', 1);
@@ -16,7 +26,6 @@ if (version_compare(PHP_VERSION, '7.3', '<')) {
   exit(2);
 }
 
-// We only want autoloading for cv-lib. Anything else could have namespace conflicts.
 $rule = [
   // 'path' => implode(DIRECTORY_SEPARATOR, [getenv('HOME'), 'src', 'cv', 'lib', 'src', '']),
   'path' => implode(DIRECTORY_SEPARATOR, [rtrim(dirname(__DIR__), DIRECTORY_SEPARATOR), 'vendor', 'civicrm', 'cv-lib', 'src', '']),
@@ -39,4 +48,5 @@ else {
   \Civi\Cv\CmsBootstrap::singleton()->bootCms()->bootCivi();
 }
 
-\Civi::pipe();
+$pipeArgs = isset($argv[1]) ? [$argv[1]] : [];
+\Civi::pipe(...$pipeArgs);
