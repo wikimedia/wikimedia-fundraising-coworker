@@ -16,7 +16,7 @@ $c = clippy()->register(plugins());
 ###############################################################################
 ## Configuration
 
-$c['ghRepo'] = 'totten/civix';
+// $c['ghRepo'] = 'civicrm/coworker'; ## Currently on lab.civicrm.org/dev/coworker
 $c['srcDir'] = fn() => realpath(dirname(pogo_script_dir()));
 $c['buildDir'] = fn($srcDir) => autodir("$srcDir/build");
 $c['distDir'] = fn($buildDir) => autodir("$buildDir/dist");
@@ -78,6 +78,7 @@ $c['app']->command("release $commonOptions", function (string $publishedTagName,
     }
   }
 
+  $taskr->subcommand('clean');
   $taskr->subcommand('tag {{0|s}}', [$publishedTagName]);
   $taskr->subcommand('build {{0|s}}', [$publishedTagName]);
   $taskr->subcommand('sign {{0|s}}', [$publishedTagName]);
@@ -118,14 +119,14 @@ $c['app']->command("sign $commonOptions", function (SymfonyStyle $io, Taskr $tas
 
 $c['app']->command("upload $commonOptions", function ($publishedTagName, SymfonyStyle $io, Taskr $taskr, Credentials $cred) use ($c) {
   $io->title("Upload code and build artifacts");
-  ['Init', $c['srcDir'], $c['ghRepo'], $c['distDir'], $c['publishedPharName']];
+  ['Init', $c['srcDir'], /*$c['ghRepo'],*/ $c['distDir'], $c['publishedPharName']];
   chdir($c['srcDir']);
 
   $vars = [
     'GCLOUD' => $c['gcloudUrl'],
-    'GH_TOKEN' => 'GH_TOKEN=' . $cred->get('GH_TOKEN', $c['ghRepo']),
+    // 'GH_TOKEN' => 'GH_TOKEN=' . $cred->get('GH_TOKEN', $c['ghRepo']),
     'VER' => $publishedTagName,
-    'REPO' => $c['ghRepo'],
+    // 'REPO' => $c['ghRepo'],
     'DIST' => $c['distDir'],
     'PHAR' => $c['distDir'] . '/' . $c['publishedPharName'],
     'PHAR_NAME' => $c['publishedPharName'],
@@ -134,14 +135,14 @@ $c['app']->command("upload $commonOptions", function ($publishedTagName, Symfony
 
   $io->section('Check connections');
   $taskr->run('gsutil ls {{GCLOUD|s}}', $vars);
-  $taskr->run('{{GH_TOKEN|s}} gh release list', $vars);
+  // $taskr->run('{{GH_TOKEN|s}} gh release list', $vars);
 
-  $io->section('Send source-code to Github');
+  $io->section('Send source-code to git server');
   $taskr->passthru('git push -f origin {{VER|s}}', $vars);
 
-  $io->section('Send binaries to Github');
-  $taskr->passthru('{{GH_TOKEN|s}} gh release create {{VER|s}} --repo {{REPO|s}} --generate-notes', $vars);
-  $taskr->passthru('{{GH_TOKEN|s}} gh release upload {{VER|s}} --repo {{REPO|s}} --clobber {{DIST|s}}/*', $vars);
+  // $io->section('Send binaries to Github');
+  // $taskr->passthru('{{GH_TOKEN|s}} gh release create {{VER|s}} --repo {{REPO|s}} --generate-notes', $vars);
+  // $taskr->passthru('{{GH_TOKEN|s}} gh release upload {{VER|s}} --repo {{REPO|s}} --clobber {{DIST|s}}/*', $vars);
 
   $io->section('Send binaries to Google Cloud Storage');
   $taskr->passthru('gsutil cp {{DIST|s}}/* {{GCLOUD|s}}/', $vars);
@@ -161,8 +162,8 @@ $c['app']->command("tips $commonOptions", function (SymfonyStyle $io) use ($c) {
   $io->title('Tips');
   $cleanup = sprintf('%s clean', basename(__FILE__));
   $io->writeln("Cleanup temp files: <comment>$cleanup</comment>");
-  $url = sprintf('https://github.com/%s/releases/edit/%s', $c['ghRepo'], $c['publishedTagName']);
-  $io->writeln("Update release notes: <comment>$url</comment>");
+  // $url = sprintf('https://github.com/%s/releases/edit/%s', $c['ghRepo'], $c['publishedTagName']);
+  // $io->writeln("Update release notes: <comment>$url</comment>");
 });
 
 $c['app']->command("clean $globalOptions", function (SymfonyStyle $io, Taskr $taskr) use ($c) {
