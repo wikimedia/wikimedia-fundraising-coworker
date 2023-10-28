@@ -6,6 +6,16 @@
 * Required: CiviCRM 5.51
 * Suggested: `cv`, `drush`, or `wp-cli`
 
+<a name="urls"></a>
+## Download URLs for alternate versions
+
+| Format            | Version(s)           | URLs |
+| --                | --                   | --   |
+| Executable binary | Latest               | PHAR: https://download.civicrm.org/coworker/coworker.phar<br/>GPG: https://download.civicrm.org/coworker/coworker.phar.asc<br/>SHA256: https://download.civicrm.org/coworker/coworker.SHA256SUMS |
+|                   | Edge (*autobuild*)   | PHAR: https://download.civicrm.org/coworker/coworker-EDGE.phar<br/>Logs: https://test.civicrm.org/view/Tools/job/Tool-Publish-coworker/ |
+|                   | Historical           | PHAR: `https://download.civicrm.org/coworker/coworker-X.Y.phar`<br/>GPG: `https://download.civicrm.org/coworker/coworker-X.Y.phar.asc`<br/>SHA256: `https://download.civicrm.org/coworker/coworker-X.Y.SHA256SUMS*) |
+| Source code       | All versions         | Git: https:/lab.civicrm.org/dev/coworker |
+
 <a name="phar-unix"></a>
 ## Install `coworker.phar` as system-wide tool (Linux/BSD/macOS)
 

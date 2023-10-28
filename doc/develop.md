@@ -27,8 +27,33 @@ Tests are organized into two groups:
 
 (Note: `CV_TEST_BUILD` is required for E2E tests, and it is ignored by unit tests.)
 
-# Publication
+Release Process
+===============
 
-* New builds of `master` are published automatically by https://test.civicrm.org/view/Tools/job/Tool-Publish-coworker/ 
-* The most recent successful build is `https://download.civicrm.org/coworker/coworker.phar`
-* Historical builds for specific revisions are also available (eg `https://download.civicrm.org/coworker/coworker.phar-v0.1`; *naming per `git describe --tags`*)
+For pre-releases, the Jenkins job https://test.civicrm.org/view/Tools/job/Tool-Publish-civix
+will automatically publish to `https://download.civicrm.org/coworker/coworker-EDGE.phar`
+
+For the official releases, the process requires:
+
+* Google Cloud CLI tools (with authentication and suitable permissions)
+	<!-- gcloud cli has login command that should be sufficient -->
+<!-- * Github CLI tools (with authentication and suitable permissions) --><!-- you can create personal developer API key in github web UI -->
+* GPG (with appropriate private key loaded; e.g. `7A1E75CB`)
+* Nix
+
+Then, on a suitably configured host:
+
+```bash
+cd coworker
+git checkout master
+git pull
+
+## Open subshell with suitable versions of most tools
+nix-shell
+
+## Do a dry-run -- Preview what will happen
+./scripts/releaser.php release <VERSION> --dry-run
+
+## Perform the actual release
+./scripts/releaser.php release <VERSION>
+```
