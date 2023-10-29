@@ -26,6 +26,8 @@ if (version_compare(PHP_VERSION, '7.3', '<')) {
   exit(2);
 }
 
+#################################################
+## Autoloading
 $rule = [
   // 'path' => implode(DIRECTORY_SEPARATOR, [getenv('HOME'), 'src', 'cv', 'lib', 'src', '']),
   'path' => implode(DIRECTORY_SEPARATOR, [rtrim(dirname(__DIR__), DIRECTORY_SEPARATOR), 'vendor', 'civicrm', 'cv-lib', 'src', '']),
@@ -41,6 +43,28 @@ spl_autoload_register(function ($class) use ($rule) {
   require_once $file;
 });
 
+#################################################
+## Warmup - Preload files from the PHAR, just in case
+## the UF adds a PHAR-interceptor that disagrees with us.
+
+function minipipe_warmup(string $path) {
+  $path = rtrim($path, DIRECTORY_SEPARATOR);
+  $scan = scandir($path);
+  if ($scan === FALSE) {
+      throw new \RuntimeException("Failed to scan ($path)");
+  }
+  $files = preg_grep('/\.php$/', $scan);
+  foreach ($files as $file) {
+    require_once $path . DIRECTORY_SEPARATOR . $file;
+  }
+}
+
+minipipe_warmup($rule['path'] . 'Util');
+minipipe_warmup($rule['path'] . 'Log');
+minipipe_warmup($rule['path']);
+
+#################################################
+## Bootstrap
 if (getenv('CIVICRM_SETTINGS') && !getenv('CIVICRM_BOOT')) {
   \Civi\Cv\Bootstrap::singleton()->boot();
 }
@@ -48,5 +72,7 @@ else {
   \Civi\Cv\CmsBootstrap::singleton()->bootCms()->bootCivi();
 }
 
+#################################################
+## Main logic
 $pipeArgs = isset($argv[1]) ? [$argv[1]] : [];
 \Civi::pipe(...$pipeArgs);

@@ -5,6 +5,7 @@ namespace Civi\Coworker\Command;
 use Bramus\Monolog\Formatter\ColoredLineFormatter;
 use Civi\Coworker\Configuration;
 use Civi\Coworker\Util\LogFilter;
+use Civi\Coworker\Util\MiniPipeUtil;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\AbstractProcessingHandler;
@@ -92,7 +93,7 @@ trait ConfigurationTrait {
     }
 
     if (empty($input->getOption('pipe')) && empty($input->getOption('web')) && empty($cfg->pipeCommand)) {
-      $cfg->pipeCommand = '*BUILTIN*';
+      $cfg->pipeCommand = 'MINIPIPE';
     }
 
     foreach ($optionMap as $inputOption => $cfgOption) {
@@ -119,13 +120,11 @@ trait ConfigurationTrait {
       }
     }
 
-    if ($cfg->pipeCommand === '*BUILTIN*') {
-      $miniPipe = dirname(COWORKER_MAIN) . DIRECTORY_SEPARATOR . 'minipipe';
-      if (!file_exists($miniPipe)) {
-        throw new \RuntimeException("Cannot use builtin pipe adapter. File note found: $miniPipe");
-      }
-      $requireMiniPipe = sprintf("require_once %s;", var_export($miniPipe, 1));
-      $cfg->pipeCommand = sprintf('php -r %s', escapeshellarg($requireMiniPipe));
+    if (preg_match('/^MINIPIPE( ([A-Za-z0-9]*))?$/', $cfg->pipeCommand, $m)) {
+      $cfg->pipeCommand = MiniPipeUtil::createCommand($m[2] ?? NULL);
+    }
+    elseif (preg_match('/^MINIPIPE/', $cfg->pipeCommand)) {
+      throw new \RuntimeException("Malformed pipe command: $cfg->pipeCommand");
     }
 
     return $cfg;

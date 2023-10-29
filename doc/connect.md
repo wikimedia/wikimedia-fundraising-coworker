@@ -75,6 +75,18 @@ $ cv ev 'Civi::pipe();'
 > ["QUIT"]
 ```
 
+### Pipe negotiation flags
+
+Pipe connections may use negotiation flags during the initial setup. You generally should not need to customize them.
+But just in case, here are some examples of setting some flags (`t` `v` `j`):
+
+```bash
+coworker run --pipe='MINIPIPE tvj'
+coworker run --pipe='cv pipe tvj'
+coworker run --pipe='drush ev "civicrm_initialize(); Civi::pipe(\'tvj\');"'
+coworker run --pipe='wp eval "civicrm_initialize(); Civi::pipe(\'tvj\');"'
+```
+
 ## HTTP (*todo*)
 
 To run tasks remotely using HTTP:
