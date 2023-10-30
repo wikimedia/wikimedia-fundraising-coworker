@@ -38,10 +38,10 @@ function queue_example_fill(string $name, array $logValues, $runAs = NULL): void
     'payload' => 'task',
     'error' => 'delete',
   ];
+  $activeSpecs = !empty(CRM_Queue_DAO_Queue::fields()['agent']) ? $specs['new'] : $specs['old'];
 
   /** @var CRM_Queue_Queue $queue */
-  $queue = Civi::queue(QUEUE_EXAMPLE_PREFIX . $name,
-    version_compare(CRM_Utils_System::version(), '5.68.alpha', '<') ? $specs['old'] : $specs['new']);
+  $queue = Civi::queue(QUEUE_EXAMPLE_PREFIX . $name, $activeSpecs);
   foreach ($logValues as $offset => $logValue) {
     $task = new CRM_Queue_Task('queue_example_logme', [$logValue]);
     $task->runAs = $runAs;
