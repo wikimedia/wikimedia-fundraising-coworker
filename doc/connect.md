@@ -69,11 +69,12 @@ How do you know if the `--pipe` command is appropriate for your system? Run it m
 ```
 $ cd /var/www/example.com/web
 $ cv ev 'Civi::pipe();'
-< ["Civi::pipe","5.50.1"]
-> ["PROTO","1.0"]
-< ["OK"]
-> ["QUIT"]
+< {"Civi::pipe":{"v":"5.47.alpha1","t":"trusted","l":["login"]}}
+> {"jsonrpc":"2.0","method":"echo","params":["hello world"],"id":null}
+< {"jsonrpc":"2.0","result":["hello world"],"id":null}
 ```
+
+(To close the session, press `Ctrl-D` to disconnect.)
 
 ### Pipe negotiation flags
 
