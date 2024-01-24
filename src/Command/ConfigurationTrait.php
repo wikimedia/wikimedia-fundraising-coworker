@@ -165,7 +165,7 @@ trait ConfigurationTrait {
         $consoleFormatter = new JsonFormatter();
       }
       else {
-        $consoleFormatter = new ColoredLineFormatter(NULL, '[%datetime%] %channel%.%level_name%: %message%');
+        $consoleFormatter = new ColoredLineFormatter();
         $consoleFormatter->ignoreEmptyContextAndExtra();
         $consoleFormatter->allowInlineLineBreaks();
       }
