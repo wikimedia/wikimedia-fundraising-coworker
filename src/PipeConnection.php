@@ -255,6 +255,7 @@ class PipeConnection {
       // super-verbose mode interferes with the protocol.
       $env['SHELL_VERBOSITY'] = 1;
     }
+    $env['COWORKER_PIPE'] = 1;
     return $env;
   }
 
