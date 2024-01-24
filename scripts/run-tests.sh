@@ -10,5 +10,5 @@ shift
 
 set -x
 
-phpunit8 --group unit "$@"
-phpunit8 --group e2e "$@"
+phpunit9 --group unit "$@"
+phpunit9 --group e2e "$@"
