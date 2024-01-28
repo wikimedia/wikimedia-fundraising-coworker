@@ -58,7 +58,7 @@ $c['boxOutputPhar'] = function($srcDir, $boxJson) {
  */
 function autodir(string $path): string {
   if (!file_exists($path)) {
-    mkdir($path);
+    mkdir($path, 0777, TRUE);
   }
   return $path;
 }
