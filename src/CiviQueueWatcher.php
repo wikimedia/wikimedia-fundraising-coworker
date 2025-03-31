@@ -65,9 +65,20 @@ class CiviQueueWatcher {
   protected $q;
 
   /**
+   * @var float
+   *   Last time we called fillSteps(), expressed as seconds-since-epoch (with fractional values).
+   */
+  protected $lastFillTime;
+
+  /**
    * @var \React\Promise\Deferred
    */
   protected $moribundDeferred;
+
+  /**
+   * @var callable|null
+   */
+  protected $addStep;
 
   /**
    * @param \Civi\Coworker\Configuration $config
