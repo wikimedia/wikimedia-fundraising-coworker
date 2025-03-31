@@ -27,7 +27,7 @@
         "lesser-evil/shell-verbosity-is-evil": "~1.0",
         "monolog/monolog": "^2.3",
         "clue/block-react": "^1.5",
-        "clue/mq-react": "~1.4.0",
+        "clue/mq-react": "~1.6.0",
         "bramus/monolog-colored-line-formatter": "~3.0",
         "symfony/yaml": "~4",
         "civicrm/cv-lib": "~0.3.48"
