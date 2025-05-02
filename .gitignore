@@ -4,5 +4,6 @@
 /bin/box
 /bin/coworker.phar
 /bin/phpunit
+/bin/yaml-lint
 /dist
 /extern

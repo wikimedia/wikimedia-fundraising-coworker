@@ -31,6 +31,6 @@
         "react/promise": "~3.2",
         "react/promise-timer": "^1.11",
         "symfony/console": "~5.4",
-        "symfony/yaml": "~4"
+        "symfony/yaml": "~5.4"
     }
 }
