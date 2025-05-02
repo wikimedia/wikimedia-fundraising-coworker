@@ -51,7 +51,7 @@ class RunCommand extends Command {
     parent::configure();
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $runtime = Runtime::get();
     $runtime->io = new SymfonyStyle($input, $output);
     $runtime->input = $input;
@@ -102,6 +102,7 @@ class RunCommand extends Command {
     });
 
     await($onStop);
+    return 0;
   }
 
   protected function pickChannels(InputInterface $input, OutputInterface $output): array {
