@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "596478dcb8cca9e36b52745b9df0ef3c",
+    "content-hash": "a0726366453794db82241efa59a04464",
     "packages": [
         {
             "name": "bramus/ansi-php",
@@ -98,16 +98,16 @@
         },
         {
             "name": "civicrm/cv-lib",
-            "version": "v0.3.63",
+            "version": "v0.3.54",
             "source": {
                 "type": "git",
                 "url": "https://github.com/civicrm/cv-lib.git",
-                "reference": "f3ae596c177f70edbcf1361216461fb4cb2b73cd"
+                "reference": "c270bd9d2000d43205f2b5b2991cb3b6474fbc28"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/civicrm/cv-lib/zipball/f3ae596c177f70edbcf1361216461fb4cb2b73cd",
-                "reference": "f3ae596c177f70edbcf1361216461fb4cb2b73cd",
+                "url": "https://api.github.com/repos/civicrm/cv-lib/zipball/c270bd9d2000d43205f2b5b2991cb3b6474fbc28",
+                "reference": "c270bd9d2000d43205f2b5b2991cb3b6474fbc28",
                 "shasum": ""
             },
             "require": {
@@ -134,9 +134,9 @@
             ],
             "description": "Bootstrap library for CiviCRM CLI tools",
             "support": {
-                "source": "https://github.com/civicrm/cv-lib/tree/v0.3.63"
+                "source": "https://github.com/civicrm/cv-lib/tree/v0.3.54"
             },
-            "time": "2025-04-17T05:51:37+00:00"
+            "time": "2024-08-10T04:56:16+00:00"
         },
         {
             "name": "clue/mq-react",
