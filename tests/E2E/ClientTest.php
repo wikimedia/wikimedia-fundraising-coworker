@@ -11,7 +11,7 @@ use Civi\Coworker\CoworkerTestTrait;
 use Civi\Coworker\PipeConnection;
 use Civi\Coworker\PipePool;
 use PHPUnit\Framework\TestCase;
-use function Clue\React\Block\await;
+use function React\Async\await;
 
 /**
  * @group e2e

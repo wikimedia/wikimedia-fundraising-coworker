@@ -3,7 +3,7 @@
 namespace Civi\Coworker;
 
 use Civi\Coworker\Client\CiviClientInterface;
-use function Clue\React\Block\await;
+use function React\Async\await;
 
 class Configuration {
 

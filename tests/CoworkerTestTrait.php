@@ -53,7 +53,9 @@ trait CoworkerTestTrait {
   }
 
   protected function await(PromiseInterface $promise) {
-    return \Clue\React\Block\await($promise, NULL, 120);
+    // FIXME: This used to set $timeout=120, but the newer implementation of await() doesn't support that.
+    // This ma mean that (when faced with problems) the test-suite is a bit hang-y?
+    return \React\Async\await($promise);
   }
 
   protected function cv(string $cmd): string {
