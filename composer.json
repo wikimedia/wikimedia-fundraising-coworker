@@ -8,7 +8,7 @@
     ],
     "config": {
         "platform": {
-            "php": "7.4"
+            "php": "8.0"
         },
         "bin-dir": "bin"
     },
@@ -18,19 +18,19 @@
          }
     },
     "require": {
-        "php": "~7.4 || ~8.0",
+        "php": "~8.0",
         "ext-json": "*",
-        "react/http": "^1.5",
-        "react/child-process": "^0.6.4",
-        "react/promise": "~3.2",
-        "symfony/console": "~5.4",
+        "bramus/monolog-colored-line-formatter": "~3.0",
+        "civicrm/cv-lib": "0.3.54",
+        "clue/mq-react": "~1.6.0",
         "lesser-evil/shell-verbosity-is-evil": "~1.0",
         "monolog/monolog": "^2.3",
-        "clue/mq-react": "~1.6.0",
-        "bramus/monolog-colored-line-formatter": "~3.0",
-        "symfony/yaml": "~4",
-        "civicrm/cv-lib": "0.3.54",
         "react/async": "^3.2",
-        "react/promise-timer": "^1.11"
+        "react/child-process": "^0.6.4",
+        "react/http": "^1.5",
+        "react/promise": "~3.2",
+        "react/promise-timer": "^1.11",
+        "symfony/console": "~5.4",
+        "symfony/yaml": "~4"
     }
 }
