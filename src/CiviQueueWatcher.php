@@ -114,7 +114,7 @@ class CiviQueueWatcher {
     Loop::addTimer($this->config->pollInterval, function() {
       $this->addStep(['fillSteps']);
     });
-    return resolve();
+    return resolve(TRUE);
   }
 
   public function stop(): PromiseInterface {
@@ -132,9 +132,9 @@ class CiviQueueWatcher {
       $this->logger->debug('Finished pending queue tasks');
       $this->addStep = NULL;
       $this->lastFillTime = NULL;
-      $this->moribundDeferred->resolve();
+      $this->moribundDeferred->resolve(TRUE);
       $this->emit('stop');
-      return resolve();
+      return resolve(TRUE);
     }
     $this->logger->debug('Poll queues', ['isPolling' => TRUE]);
     $this->lastFillTime = microtime(1);
@@ -164,7 +164,7 @@ class CiviQueueWatcher {
         // claimItem is specified to return 0 or 1 items.
         if (empty($allItems)) {
           $this->logger->debug('Nothing in queue {name}', ['name' => $queueName, 'isPolling' => TRUE]);
-          return resolve();
+          return resolve(TRUE);
         }
 
         $subgroups = TaskSplitter::split($allItems);
@@ -176,7 +176,7 @@ class CiviQueueWatcher {
           $promises[$context] = $client->api4('Queue', 'runItems', [
             'items' => $subgroup['items'],
             'checkPermissions' => FALSE,
-          ])->then([$this, 'onRunItemResults']);
+          ])->then(fn(...$args) => $this->onRunItemResults(...$args));
         }
         return all($promises);
       });
@@ -209,7 +209,7 @@ class CiviQueueWatcher {
     $now = microtime(1);
     $nextFillTime = $this->lastFillTime + $this->config->pollInterval;
     $waitTime = $nextFillTime - $now;
-    return $waitTime > 0 ? \React\Promise\Timer\resolve($waitTime) : resolve();
+    return $waitTime > 0 ? \React\Promise\Timer\sleep($waitTime) : resolve(TRUE);
   }
 
   protected function onNextStep(array $args): PromiseInterface {

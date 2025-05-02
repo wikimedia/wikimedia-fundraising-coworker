@@ -39,7 +39,7 @@ class ProcessUtil {
     $timer = Loop::addPeriodicTimer(static::INTERVAL, function () use (&$timer, &$escalate, $stopping, $process) {
       if (!$process->isRunning()) {
         Loop::cancelTimer($timer);
-        $stopping->resolve();
+        $stopping->resolve(TRUE);
         // ^^ At some point, we may want more sophisticated reporting about the escalation, but for now KISS.
         return;
       }
@@ -69,7 +69,7 @@ class ProcessUtil {
         }
         Loop::cancelTimer($timer);
         static::verbose("Shutdown of pipe worker has failed\n");
-        $stopping->resolve();
+        $stopping->resolve(TRUE);
         // ^^ At some point, we may want more sophisticated reporting about the escalation, but for now KISS.
       }
 

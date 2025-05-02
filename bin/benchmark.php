@@ -103,7 +103,7 @@ class ThreadLocalBenchmark extends BaseBenchmark {
     $task->run(new CRM_Queue_TaskContext());
 
     $deferred = new React\Promise\Deferred();
-    $deferred->resolve();
+    $deferred->resolve(TRUE);
     return $deferred->promise();
   }
 
@@ -123,7 +123,7 @@ class ShellProcessBenchmark extends BaseBenchmark {
     $process = new React\ChildProcess\Process($cmd);
     $process->start();
     $process->on('exit', function ($exitCode, $termSignal) use ($deferred) {
-      $deferred->resolve();
+      $deferred->resolve(TRUE);
     });
 
     return $deferred->promise();
@@ -149,7 +149,7 @@ class ForkPerTaskBenchmark extends BaseBenchmark {
         pcntl_waitpid($childProcess, $status, WNOHANG);
         if (pcntl_wifexited($status)) {
           Loop::cancelTimer($forkTimer);
-          $deferred->resolve();
+          $deferred->resolve(TRUE);
         }
       });
       return $deferred->promise();
@@ -296,7 +296,7 @@ class ForkPoolWorkerStub {
       $this->verbose("Received %s\n", $data);
       $oldDeferred = $this->deferred;
       $this->deferred = NULL;
-      $oldDeferred->resolve();
+      $oldDeferred->resolve(TRUE);
     }
     else {
       $this->verbose("Ignore unexpected message %s\n", $data);

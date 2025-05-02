@@ -30,6 +30,7 @@
         "bramus/monolog-colored-line-formatter": "~3.0",
         "symfony/yaml": "~4",
         "civicrm/cv-lib": "0.3.54",
-        "react/async": "^3.2"
+        "react/async": "^3.2",
+        "react/promise-timer": "^1.11"
     }
 }
