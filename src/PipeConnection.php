@@ -107,7 +107,7 @@ class PipeConnection {
         $oldDeferred = $this->deferred;
         $this->deferred = NULL;
         $this->idling();
-        $oldDeferred->reject('Process exited');
+        $oldDeferred->reject(new \Exception('Process exited'));
       }
     });
 
@@ -134,7 +134,7 @@ class PipeConnection {
     if (!$this->process->isRunning()) {
       $this->releaseDeferred();
       $this->log->error("Worker disappeared. Cannot send request", ['requestLine' => $requestLine]);
-      $deferred->reject("Worker disappeared. Cannot send: $requestLine");
+      $deferred->reject(new \Exception("Worker disappeared. Cannot send: $requestLine"));
       return $deferred->promise();
     }
 
