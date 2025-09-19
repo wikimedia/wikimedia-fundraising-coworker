@@ -22,4 +22,19 @@ class FileUtil {
     return $file;
   }
 
+  /**
+   * Get the path to a file in the "state" (local working dir).
+   *
+   * @param string|null $subpath
+   * @return string
+   */
+  public static function getStatePath(?string $subpath): string {
+    $stateHome = getenv('XDG_STATE_HOME') ?: (getenv('HOME') . '/.local/state');
+    $path = "$stateHome/coworker";
+    if ($subpath) {
+      $path .= "/" . ltrim($subpath, '/');
+    }
+    return $path;
+  }
+
 }
