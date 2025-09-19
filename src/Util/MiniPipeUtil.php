@@ -11,24 +11,33 @@ class MiniPipeUtil {
    */
   public static function createCommand(?string $negotiationFlags = NULL): string {
     if (defined('COWORKER_PHAR')) {
-      $requireMiniPipe = sprintf('Phar::loadPhar(%s,"coworker.phar"); require_once "phar://coworker.phar/bin/minipipe";',
-        var_export(COWORKER_PHAR, 1));
-      $result = sprintf('php -r %s', escapeshellarg($requireMiniPipe));
+      $requireMiniPipe = implode("\n", [
+        '<' . "?php",
+        sprintf('Phar::loadPhar(%s,"coworker.phar");', var_export(COWORKER_PHAR, 1)),
+        'require_once "phar://coworker.phar/bin/minipipe";',
+      ]);
+      $stub = static::findCreateStub($requireMiniPipe);
+      $result = sprintf('php %s', ProcessUtil::lazyEscape($stub));
     }
     else {
       $miniPipe = dirname(COWORKER_MAIN) . DIRECTORY_SEPARATOR . 'minipipe';
       if (!file_exists($miniPipe)) {
         throw new \RuntimeException("Cannot use builtin pipe adapter. File note found: $miniPipe");
       }
-      $requireMiniPipe = sprintf("require_once %s;", var_export($miniPipe, 1));
-      $result = sprintf('php -r %s', escapeshellarg($requireMiniPipe));
-      // The below would be simpler, but the above is a better facsimile of the PHAR behavior.
-      // $result = sprintf('php %s', escapeshellarg($miniPipe));
+      $result = sprintf('php %s', ProcessUtil::lazyEscape($miniPipe));
     }
+
     if ($negotiationFlags !== NULL) {
-      $result .= ' ' . escapeshellarg($negotiationFlags);
+      $result .= ' ' . ProcessUtil::lazyEscape($negotiationFlags);
     }
     return $result;
+  }
+
+  protected static function findCreateStub(string $body): string {
+    $checksum = hash('sha256', $body);
+    $file = FileUtil::getStatePath("/minipipe/minipipe-{$checksum}.php");
+    FileUtil::put($file, $body);
+    return $file;
   }
 
 }
