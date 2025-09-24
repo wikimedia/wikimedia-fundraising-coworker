@@ -31,12 +31,12 @@ coworker run --web='https://example.com/civicrm/queue?token=XXX'
 ```
 
 By default, `coworker run` will attempt to auto-detect a local CiviCRM instance from the current folder (based on [cv bootstrap
-process](https://github.com/civicrm/cv/#bootstrap)).  However, you may need to configure the [`CONNECTION_OPTIONS`](doc/connect.md) -- especially if
+process](https://github.com/civicrm/cv/#bootstrap)).  However, you may need to configure the [_connection options_](doc/connect.md) -- especially if
 using a multisite CMS or connecting to a remote server.
 
 If the connection succeeds, then `coworker` will monitor CiviCRM for new tasks and execute them.
 
-> __TIP__: For CiviCRM developers, consider using `coworker debug` to run tasks with less parallel and more
+> __TIP__: For CiviCRM developers, consider using `coworker debug` to run tasks with single-threading and more
 > debug information.
 >
 > __TIP__: For CiviCRM administrators, consider adding a `systemd` unit to launch `coworker`.

@@ -2,11 +2,25 @@
 
 ## Inspection
 
-Consider setting these [config options](config.md):
+If you want to closely inspect what `coworker` does, consider using the `debug` mode with these [config options](config.md):
 
 ```bash
 coworker debug -d logPolling=1 -d logInternalQueue=1
 ```
+
+## Build
+
+If you have the source-code and wish to produce a new `coworker.phar` executable, then run `build.sh`:
+
+```bash
+./scripts/build.sh
+```
+
+> __TIP__: To reproduce the tool-chain used for official compilation, run `build.sh` inside `nix-shell`:
+>
+> ```bash
+> nix-shell --run ./scripts/build.sh
+> ```
 
 ## Tests
 
@@ -31,7 +45,7 @@ Release Process
 ===============
 
 For pre-releases, the Jenkins job https://test.civicrm.org/view/Tools/job/Tool-Publish-civix
-will automatically publish to `https://download.civicrm.org/coworker/coworker-EDGE.phar`
+will automatically generate [coworker-EDGE.phar](`https://download.civicrm.org/coworker/coworker-EDGE.phar`).
 
 For the official releases, the process requires:
 
