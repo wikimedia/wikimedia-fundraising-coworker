@@ -45,7 +45,7 @@ Release Process
 ===============
 
 For pre-releases, the Jenkins job https://test.civicrm.org/view/Tools/job/Tool-Publish-civix
-will automatically generate [coworker-EDGE.phar](`https://download.civicrm.org/coworker/coworker-EDGE.phar`).
+will automatically generate [coworker-EDGE.phar](https://download.civicrm.org/coworker/coworker-EDGE.phar).
 
 For the official releases, the process requires:
 
