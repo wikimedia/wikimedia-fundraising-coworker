@@ -15,7 +15,7 @@ in
   pkgs.mkShell {
     nativeBuildInputs = buildkit.profiles.base ++ [
 
-      (buildkit.pins.v2305.php81.buildEnv {
+      (buildkit.pins.v2505.php81.buildEnv {
         extraConfig = ''
           memory_limit=-1
         '';
