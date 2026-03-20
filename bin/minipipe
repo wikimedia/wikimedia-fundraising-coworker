@@ -11,7 +11,9 @@
  *   php /path/to/coworker-repo/bin/minipipe ulv
  *
  * `minipipe` is basically the same as `cv pipe`, except that:
- *   - It doesn't need namespace-prefixing. (It only has classloading for `cv-lib`.)
+ *   - It doesn't use the full `vendor/autoload.php`. (Prevent conflicts with host.)
+ *   - It doesn't use namespace-prefixing.
+ *   - It only uses classes from `cv-lib`. (Preload cherry-picked files+folders.)
  *   - It can be embedded inside `coworker.phar`.
  */
 
@@ -47,6 +49,10 @@ spl_autoload_register(function ($class) use ($rule) {
 ## Warmup - Preload files from the PHAR, just in case
 ## the UF adds a PHAR-interceptor that disagrees with us.
 
+// In cv-lib, some utility classes are specifically aimed at Symfony Console.
+// However, minipipe doesn't load any Symfony classes (to prevent conflicts with host env).
+define('MINIPIPE_EXCLUDE', '/(BaseApplication|CvArgvInput).php/');
+
 function minipipe_warmup(string $path) {
   $path = rtrim($path, DIRECTORY_SEPARATOR);
   $scan = scandir($path);
@@ -54,6 +60,7 @@ function minipipe_warmup(string $path) {
       throw new \RuntimeException("Failed to scan ($path)");
   }
   $files = preg_grep('/\.php$/', $scan);
+  $files = preg_grep(MINIPIPE_EXCLUDE, $files, PREG_GREP_INVERT);
   foreach ($files as $file) {
     require_once $path . DIRECTORY_SEPARATOR . $file;
   }
