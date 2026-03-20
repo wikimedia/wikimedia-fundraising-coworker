@@ -46,6 +46,10 @@ Coworker must send requests to CiviCRM. These options determine how it transmits
 ### civicrmVersion
 
 * __Description__: Only run if the local CiviCRM deployment meets this minimum requirement.
+
+    Coworker should usually have a default based on its own requirements. If you customize the configuration (e.g. custom filters in `pollQuery`), then
+    you might want to tighten this.
+
 * __CLI Option__: `-d civicrmVersion=X`
 * __Environment Variable__: _n/a_
 * __File Field__: `civicrmVersion`
@@ -53,7 +57,7 @@ Coworker must send requests to CiviCRM. These options determine how it transmits
 
 ### pipeCommand
 
-External command used to start the pipe.
+External command used to start the pipe. This might be customized to commands like `ssh`, `drush`, `wp-cli`, or `cv`. For more details, see [coworker: Connecting to CiviCRM](connect.md).
 
 The special value `MINIPIPE` indicate a built-in adapter (based on `cv-lib`).
 
@@ -122,7 +126,7 @@ Coworker runs a control process to monitor CiviCRM. These options determine how 
 
     After claiming a task, it is momentarily placed on an internal-queue while we find/setup resources for executing the
     task. By default, we exclude details about this from the log. However, you may re-enable it if you are specifically
-    debugging issues coworker's task management.
+    debugging issues with coworker's task management.
 
 * __CLI Option__: `-d logInternalQueue=1`
 * __Environment Variable__: _n/a_
@@ -159,7 +163,7 @@ Coworker maintains a pool of reusable worker processes. These options determine 
 
 ### workerCleanupCount
 
-* __Description__: When we hit the maximum number of workers, we may need remove some idle processes. How many should we try to remove?
+* __Description__: When we hit the maximum number of workers, we may remove some idle processes. How many should we try to remove?
 * __CLI Option__: `-d workerCleanupCount=X`
 * __Environment Variable__: `COWORKER_GC_WORKERS`
 * __File Field__: `workerCleanupCount`
@@ -177,7 +181,8 @@ Coworker maintains a pool of reusable worker processes. These options determine 
 
 * __Description__: Maximum number of tasks to assign a single worker.
 
-    After reaching this limit, no more tasks will be given to the worker.
+    After reaching this limit, no more tasks will be given to the worker. The worker will shutdown gracefully and be replaced by a new instance.
+
 * __CLI Option__: `-d workerRequests=X`
 * __Environment Variable__: `COWORKER_REQUESTS`
 * __File Field__: `workerRequests`
@@ -187,7 +192,7 @@ Coworker maintains a pool of reusable worker processes. These options determine 
 
 * __Description__: Maximum amount of time (seconds) for which a single worker should execute.
 
-    After reaching this limit, no more tasks will be given to the worker.
+    After reaching this limit, no more tasks will be given to the worker. The worker will shutdown gracefully and be replaced by a new instance.
 
 * __CLI Option__: `-d workerDuration=X`
 * __Environment Variable__: `COWORKER_DURATION`
@@ -196,7 +201,7 @@ Coworker maintains a pool of reusable worker processes. These options determine 
 
 ### workerTimeout
 
-* __Description__: If the worker is idle for $X seconds, then shut it down.
+* __Description__: If the worker is idle for `$X` seconds, then shut it down.
 * __CLI Option__: `-d workerTimeout=X`
 * __Environment Variable__: `COWORKER_TIMEOUT`
 * __File Field__: `workerTimeout`
