@@ -21,7 +21,7 @@
         "php": "~8.0",
         "ext-json": "*",
         "bramus/monolog-colored-line-formatter": "~3.0",
-        "civicrm/cv-lib": "0.3.54",
+        "civicrm/cv-lib": "~0.3.54",
         "clue/mq-react": "~1.6.0",
         "lesser-evil/shell-verbosity-is-evil": "~1.0",
         "monolog/monolog": "^2.3",
