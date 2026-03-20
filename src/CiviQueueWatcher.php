@@ -8,7 +8,6 @@ use Evenement\EventEmitterTrait;
 use React\EventLoop\Loop;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
-use function React\Promise\all;
 use function React\Promise\resolve;
 
 /**
@@ -168,17 +167,18 @@ class CiviQueueWatcher {
         }
 
         $subgroups = TaskSplitter::split($allItems);
-        $promises = [];
         foreach ($subgroups as $subgroup) {
           $context = $subgroup['context'];
           $this->logger->notice('Claimed queue item(s) for {context}: {items}', $subgroup);
           $client = new Client\CiviPoolClient($this->pipePool, $context, $this->logger->withName("CiviPool[$context]"));
-          $promises[$context] = $client->api4('Queue', 'runItems', [
+          // Note: Do not return or block on the promise for Queue.runItems.
+          // We just watch the upstream queue. The pipePool decides when to dispatch/wrap-up local tasks.
+          $client->api4('Queue', 'runItems', [
             'items' => $subgroup['items'],
             'checkPermissions' => FALSE,
-          ])->then(fn(...$args) => $this->onRunItemResults(...$args));
+          ])->then([$this, 'onRunItemResults']);
         }
-        return all($promises);
+        return resolve(TRUE);
       });
   }
 
@@ -187,8 +187,7 @@ class CiviQueueWatcher {
    *
    * @param array $results
    */
-  protected function onRunItemResults(array $results): void {
-    // TODO: Is this really getting called?
+  public function onRunItemResults(array $results): void {
     foreach ($results as $result) {
       switch ($result['outcome']) {
         case 'fail':
