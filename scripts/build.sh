@@ -8,17 +8,13 @@ function absdirname() {
   popd >> /dev/null
 }
 
-SCRIPTDIR=$(absdirname "$0")
-PRJDIR=$(dirname "$SCRIPTDIR")
-set -ex
-
-BOX_VERSION=3.16.0
-BOX_URL="https://github.com/humbug/box/releases/download/${BOX_VERSION}/box.phar"
-BOX_DIR="$PRJDIR/extern/box-$BOX_VERSION"
-BOX_BIN="$BOX_DIR/box"
-[ ! -f "$BOX_BIN" ] && ( mkdir -p "$BOX_DIR" ; curl -L "$BOX_URL" -o "$BOX_BIN" ; chmod +x "$BOX_BIN" )
+SCRDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$SCRDIR")
+# OUTFILE="$PRJDIR/bin/coworker.phar"
+set -e
 
 pushd "$PRJDIR" >> /dev/null
   composer install --prefer-dist --no-progress --no-suggest --no-dev --no-interaction
-  php -d phar.read_only=0 "$BOX_BIN" build -v
+  box compile -v
+  # php scripts/check-phar.php "$OUTFILE"
 popd >> /dev/null
