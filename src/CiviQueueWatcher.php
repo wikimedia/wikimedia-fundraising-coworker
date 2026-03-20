@@ -135,8 +135,19 @@ class CiviQueueWatcher {
       $this->emit('stop');
       return resolve(TRUE);
     }
-    $this->logger->debug('Poll queues', ['isPolling' => TRUE]);
     $this->lastFillTime = microtime(1);
+
+    // Optimization: If our pool is full, then it would be rude to take items
+    // that we cannot work on. Maybe another instance wants them...
+    if (!$this->pipePool->hasOpenSlot()) {
+      $this->logger->debug('All slots busy');
+      $this->addStep(['finishInterval']);
+      $this->addStep(['fillSteps']);
+      return resolve(TRUE);
+    }
+
+    $this->logger->debug('Poll queues', ['isPolling' => TRUE]);
+
     return $this->ctl->api4('Queue', 'get', $this->config->pollQuery)
       ->then(function ($queues) {
         foreach ($queues as $queue) {
