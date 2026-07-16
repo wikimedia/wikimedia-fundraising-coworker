@@ -5,7 +5,16 @@ namespace Civi\Coworker\Client;
 use Monolog\Logger;
 use React\Promise\PromiseInterface;
 
-class CiviPoolClient implements CiviClientInterface, CiviSessionInterface {
+/**
+ * Client for CiviCRM based on a pool of many PipeConnections. It encodes and decodes Civi-specific
+ * requests. Built primarily on CiviPipeClientTrait.
+ *
+ * CAUTION: This inherits session methods (`login(...)` and `options(...)`). However, I don't believe
+ * it currently propagates the session options in a sensible fashion. It's OK right now because
+ * we don't really use CiviPoolClient->login() or CiviPoolClient->options(). But these methods
+ * should be overridden/revised.
+ */
+class CiviPoolClient implements CiviClientInterface {
 
   use CiviPipeClientTrait;
 

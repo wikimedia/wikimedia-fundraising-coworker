@@ -7,6 +7,11 @@ use Civi\Coworker\Util\JsonRpc;
 use React\Promise\PromiseInterface;
 
 /**
+ * Helper class for implementing a CiviCRM API client.
+ *
+ * This implements most of the methods for `CiviClientInterface` and `CiviSessionInterface`, but
+ * it requires you to provide an implementation of `function sendJsonRpc(string $requestLine): Promise<string>`.
+ *
  * @see \Civi\Coworker\Client\CiviClientInterface
  * @see \Civi\Coworker\Client\CiviSessionInterface
  */
@@ -68,6 +73,11 @@ trait CiviPipeClientTrait {
   }
 
   /**
+   * Login to the CiviCRM instance.
+   *
+   * FIXME: This implementation is suitable for CiviPipeClient, but it will be awkward with CiviPoolClient.
+   * For CiviPoolClient, we need a way to remember these options and re-apply them for new sub-processes.
+   *
    * @param array $params
    * @return \React\Promise\PromiseInterface
    * @see \Civi\Pipe\PublicMethods::login()
@@ -77,6 +87,11 @@ trait CiviPipeClientTrait {
   }
 
   /**
+   * Configure any session-options.
+   *
+   * FIXME: This implementation is suitable for CiviPipeClient, but it will be awkward with CiviPoolClient.
+   * For CiviPoolClient, we need a way to remember these options and re-apply them for new sub-processes.
+   *
    * @param array $params
    * @return \React\Promise\PromiseInterface
    * @see \Civi\Pipe\PublicMethods::options()

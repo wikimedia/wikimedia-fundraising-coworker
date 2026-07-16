@@ -9,10 +9,10 @@ use React\Promise\PromiseInterface;
 use function React\Promise\reject;
 
 /**
- * Wrapper for PipeConnection which encodes and decodes Civi-specific
- * requests.
+ * Client for CiviCRM based on a single PipeConnection. It encodes and decodes Civi-specific
+ * requests. Built primarily on CiviPipeClientTrait.
  */
-class CiviPipeClient implements CiviClientInterface {
+class CiviPipeClient implements CiviClientInterface, CiviSessionInterface {
 
   /**
    * @var \Civi\Coworker\Configuration
