@@ -1,6 +1,7 @@
 # clue/reactphp-mq
 
-[![CI status](https://github.com/clue/reactphp-mq/workflows/CI/badge.svg)](https://github.com/clue/reactphp-mq/actions)
+[![CI status](https://github.com/clue/reactphp-mq/actions/workflows/ci.yml/badge.svg)](https://github.com/clue/reactphp-mq/actions)
+[![code coverage](https://img.shields.io/badge/code%20coverage-100%25-success)](#tests)
 [![installs on Packagist](https://img.shields.io/packagist/dt/clue/mq-react?color=blue&label=installs%20on%20Packagist)](https://packagist.org/packages/clue/mq-react)
 
 Mini Queue, the lightweight in-memory message queue to concurrently do many (but not too many) things at once,
@@ -106,7 +107,7 @@ is reached, it will not start a new operation and instead queue this for future
 execution. Once one of the pending operations complete, it will pick the next
 job from the queue and execute this operation.
 
-The `new Queue(int $concurrency, ?int $limit, callable $handler)` call
+The `new Queue(int $concurrency, ?int $limit, callable(mixed):PromiseInterface<T> $handler)` call
 can be used to create a new queue instance.
 You can create any number of queues, for example when you want to apply
 different limits to different kinds of operations.
@@ -274,7 +275,7 @@ for more details.
 
 #### all()
 
-The static `all(int $concurrency, array $jobs, callable $handler): PromiseInterface<mixed[]>` method can be used to
+The static `all(int $concurrency, array<TKey,TIn> $jobs, callable(TIn):PromiseInterface<TOut> $handler): PromiseInterface<array<TKey,TOut>>` method can be used to
 concurrently process all given jobs through the given `$handler`.
 
 This is a convenience method which uses the `Queue` internally to
@@ -348,7 +349,7 @@ $promise = Queue::all(10, $jobs, array($browser, 'get'));
 
 #### any()
 
-The static `any(int $concurrency, array $jobs, callable $handler): PromiseInterface<mixed>` method can be used to
+The static `any(int $concurrency, array<TKey,TIn> $jobs, callable(TIn):Promise<TOut> $handler): PromiseInterface<TOut>` method can be used to
 concurrently process the given jobs through the given `$handler` and
 resolve with first resolution value.
 
@@ -422,15 +423,13 @@ $promise = Queue::any(10, $jobs, array($browser, 'get'));
 #### Blocking
 
 As stated above, this library provides you a powerful, async API by default.
-If, however, you want to integrate this into your traditional, blocking
-environment, you may want to look into also using
-[clue/reactphp-block](https://github.com/clue/reactphp-block).
 
-The resulting blocking code that awaits a number of concurrent HTTP requests
-could look something like this:
+You can also integrate this into your traditional, blocking environment by using
+[reactphp/async](https://github.com/reactphp/async). This allows you to simply
+await async HTTP requests like this:
 
 ```php
-use Clue\React\Block;
+use function React\Async\await;
 
 $browser = new React\Http\Browser();
 
@@ -439,7 +438,7 @@ $promise = Queue::all(3, $urls, function ($url) use ($browser) {
 });
 
 try {
-    $responses = Block\await($promise, $loop);
+    $responses = await($promise);
     // responses successfully received
 } catch (Exception $e) {
     // an error occured while performing the requests
@@ -450,6 +449,8 @@ Similarly, you can also wrap this in a function to provide a simple API and hide
 all the async details from the outside:
 
 ```php
+use function React\Async\await; 
+
 /**
  * Concurrently downloads all the given URIs
  *
@@ -465,12 +466,13 @@ function download(array $uris)
         return $browser->get($uri);
     });
 
-    return Clue\React\Block\await($promise, $loop);
+    return await($promise);
 }
 ```
 
-Please refer to [clue/reactphp-block](https://github.com/clue/reactphp-block#readme)
-for more details.
+This is made possible thanks to fibers available in PHP 8.1+ and our
+compatibility API that also works on all supported PHP versions.
+Please refer to [reactphp/async](https://github.com/reactphp/async#readme) for more details.
 
 > Keep in mind that returning an array of response messages means that the whole
   response body has to be kept in memory.
@@ -484,7 +486,7 @@ This project follows [SemVer](https://semver.org/).
 This will install the latest supported version:
 
 ```bash
-$ composer require clue/mq-react:^1.4
+composer require clue/mq-react:^1.6
 ```
 
 See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
@@ -499,13 +501,21 @@ To run the test suite, you first need to clone this repo and then install all
 dependencies [through Composer](https://getcomposer.org/):
 
 ```bash
-$ composer install
+composer install
 ```
 
 To run the test suite, go to the project root and run:
 
 ```bash
-$ vendor/bin/phpunit
+vendor/bin/phpunit
+```
+
+The test suite is set up to always ensure 100% code coverage across all
+supported environments. If you have the Xdebug extension installed, you can also
+generate a code coverage report locally like this:
+
+```bash
+XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-text
 ```
 
 ## License

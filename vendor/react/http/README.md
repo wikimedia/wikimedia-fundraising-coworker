@@ -77,7 +77,9 @@ multiple concurrent HTTP requests without blocking.
             * [json()](#json)
             * [plaintext()](#plaintext)
             * [xml()](#xml)
+        * [Request](#request-1)
         * [ServerRequest](#serverrequest)
+        * [Uri](#uri)
         * [ResponseException](#responseexception)
     * [React\Http\Middleware](#reacthttpmiddleware)
         * [StreamingRequestMiddleware](#streamingrequestmiddleware)
@@ -342,9 +344,10 @@ $browser->get($url, $headers)->then(function (Psr\Http\Message\ResponseInterface
 Any redirected requests will follow the semantics of the original request and
 will include the same request headers as the original request except for those
 listed below.
-If the original request contained a request body, this request body will never
-be passed to the redirected request. Accordingly, each redirected request will
-remove any `Content-Length` and `Content-Type` request headers.
+If the original request is a temporary (307) or a permanent (308) redirect, request
+body and headers will be passed to the redirected request. Otherwise, the request 
+body will never be passed to the redirected request. Accordingly, each redirected 
+request will remove any `Content-Length` and `Content-Type` request headers.
 
 If the original request used HTTP authentication with an `Authorization` request
 header, this request header will only be passed as part of the redirected
@@ -2446,8 +2449,7 @@ constants with the `STATUS_*` prefix. For instance, the `200 OK` and
 `404 Not Found` status codes can used as `Response::STATUS_OK` and
 `Response::STATUS_NOT_FOUND` respectively.
 
-> Internally, this implementation builds on top of an existing incoming
-  response message and only adds required streaming support. This base class is
+> Internally, this implementation builds on top of a base class which is
   considered an implementation detail that may change in the future.
 
 ##### html()
@@ -2627,6 +2629,23 @@ $response = React\Http\Message\Response::xml(
 )->withStatus(React\Http\Message\Response::STATUS_BAD_REQUEST);
 ```
 
+#### Request
+
+The `React\Http\Message\Request` class can be used to
+respresent an outgoing HTTP request message.
+
+This class implements the
+[PSR-7 `RequestInterface`](https://www.php-fig.org/psr/psr-7/#32-psrhttpmessagerequestinterface)
+which extends the
+[PSR-7 `MessageInterface`](https://www.php-fig.org/psr/psr-7/#31-psrhttpmessagemessageinterface).
+
+This is mostly used internally to represent each outgoing HTTP request
+message for the HTTP client implementation. Likewise, you can also use this
+class with other HTTP client implementations and for tests.
+
+> Internally, this implementation builds on top of a base class which is
+  considered an implementation detail that may change in the future.
+
 #### ServerRequest
 
 The `React\Http\Message\ServerRequest` class can be used to
@@ -2643,9 +2662,20 @@ This is mostly used internally to represent each incoming request message.
 Likewise, you can also use this class in test cases to test how your web
 application reacts to certain HTTP requests.
 
-> Internally, this implementation builds on top of an existing outgoing
-  request message and only adds required server methods. This base class is
+> Internally, this implementation builds on top of a base class which is
   considered an implementation detail that may change in the future.
+
+#### Uri
+
+The `React\Http\Message\Uri` class can be used to
+respresent a URI (or URL).
+
+This class implements the
+[PSR-7 `UriInterface`](https://www.php-fig.org/psr/psr-7/#35-psrhttpmessageuriinterface).
+
+This is mostly used internally to represent the URI of each HTTP request
+message for our HTTP client and server implementations. Likewise, you may
+also use this class with other HTTP implementations and for tests.
 
 #### ResponseException
 
@@ -2956,7 +2986,7 @@ This project follows [SemVer](https://semver.org/).
 This will install the latest supported version:
 
 ```bash
-composer require react/http:^1.8
+composer require react/http:^1.11
 ```
 
 See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.

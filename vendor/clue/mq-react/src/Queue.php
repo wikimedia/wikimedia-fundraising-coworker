@@ -3,7 +3,6 @@
 namespace Clue\React\Mq;
 
 use React\Promise;
-use React\Promise\CancellablePromiseInterface;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
 
@@ -19,6 +18,8 @@ use React\Promise\PromiseInterface;
  * is reached, it will not start a new operation and instead queue this for future
  * execution. Once one of the pending operations complete, it will pick the next
  * job from the queue and execute this operation.
+ *
+ * @template T
  */
 class Queue implements \Countable
 {
@@ -26,7 +27,10 @@ class Queue implements \Countable
     private $limit;
     private $handler;
 
+    /** @var int<0,max> */
     private $pending = 0;
+
+    /** @var array<int,\Closure():void> */
     private $queue = array();
 
     /**
@@ -101,10 +105,13 @@ class Queue implements \Countable
      * > Keep in mind that returning an array of response messages means that
      *   the whole response body has to be kept in memory.
      *
-     * @param int      $concurrency concurrency soft limit
-     * @param array    $jobs
-     * @param callable $handler
-     * @return PromiseInterface Returns a Promise<mixed[]> which resolves with an array of all resolution values
+     * @template TKey
+     * @template TIn
+     * @template TOut
+     * @param int                                  $concurrency concurrency soft limit
+     * @param array<TKey,TIn>                      $jobs
+     * @param callable(TIn):PromiseInterface<TOut> $handler
+     * @return PromiseInterface<array<TKey,TOut>> Returns a Promise which resolves with an array of all resolution values
      *     or rejects when any of the operations reject.
      */
     public static function all($concurrency, array $jobs, $handler)
@@ -124,7 +131,7 @@ class Queue implements \Countable
             Promise\all($promises)->then($resolve, function ($e) use ($promises, $reject) {
                 // cancel all pending promises if a single promise fails
                 foreach (array_reverse($promises) as $promise) {
-                    if ($promise instanceof CancellablePromiseInterface) {
+                    if ($promise instanceof PromiseInterface && \method_exists($promise, 'cancel')) {
                         $promise->cancel();
                     }
                 }
@@ -135,7 +142,7 @@ class Queue implements \Countable
         }, function () use ($promises) {
             // cancel all pending promises on cancellation
             foreach (array_reverse($promises) as $promise) {
-                if ($promise instanceof CancellablePromiseInterface) {
+                if ($promise instanceof PromiseInterface && \method_exists($promise, 'cancel')) {
                     $promise->cancel();
                 }
             }
@@ -213,10 +220,13 @@ class Queue implements \Countable
      * $promise = Queue::any(10, $jobs, array($browser, 'get'));
      * ```
      *
-     * @param int      $concurrency concurrency soft limit
-     * @param array    $jobs
-     * @param callable $handler
-     * @return PromiseInterface Returns a Promise<mixed> which resolves with a single resolution value
+     * @template TKey
+     * @template TIn
+     * @template TOut
+     * @param int                                  $concurrency concurrency soft limit
+     * @param array<TKey,TIn>                      $jobs
+     * @param callable(TIn):PromiseInterface<TOut> $handler
+     * @return PromiseInterface<TOut> Returns a Promise which resolves with a single resolution value
      *     or rejects when all of the operations reject.
      */
     public static function any($concurrency, array $jobs, $handler)
@@ -241,7 +251,7 @@ class Queue implements \Countable
             Promise\any($promises)->then(function ($result) use ($promises, $resolve) {
                 // cancel all pending promises if a single result is ready
                 foreach (array_reverse($promises) as $promise) {
-                    if ($promise instanceof CancellablePromiseInterface) {
+                    if ($promise instanceof PromiseInterface && \method_exists($promise, 'cancel')) {
                         $promise->cancel();
                     }
                 }
@@ -252,7 +262,7 @@ class Queue implements \Countable
         }, function () use ($promises) {
             // cancel all pending promises on cancellation
             foreach (array_reverse($promises) as $promise) {
-                if ($promise instanceof CancellablePromiseInterface) {
+                if ($promise instanceof PromiseInterface && \method_exists($promise, 'cancel')) {
                     $promise->cancel();
                 }
             }
@@ -308,9 +318,9 @@ class Queue implements \Countable
      * $q = new Queue(10, null, array($browser, 'get'));
      * ```
      *
-     * @param int      $concurrency concurrency soft limit
-     * @param int|null $limit       queue hard limit or NULL=unlimited
-     * @param callable $handler
+     * @param int                                    $concurrency concurrency soft limit
+     * @param int|null                               $limit       queue hard limit or NULL=unlimited
+     * @param callable(mixed):PromiseInterface<T> $handler
      * @throws \InvalidArgumentException
      */
     public function __construct($concurrency, $limit, $handler)
@@ -339,7 +349,7 @@ class Queue implements \Countable
      * completed. This means that this is handled entirely transparently and you do not
      * need to worry about this concurrency limit yourself.
      *
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface<T>
      */
     public function __invoke()
     {
@@ -364,25 +374,44 @@ class Queue implements \Countable
         $queue[] = null;
         end($queue);
         $id = key($queue);
+        assert(is_int($id));
 
-        $deferred = new Deferred(function ($_, $reject) use (&$queue, $id, &$deferred) {
+        /** @var ?PromiseInterface<T> $pending */
+        $pending = null;
+
+        $deferred = new Deferred(function ($_, $reject) use (&$queue, $id, &$pending) {
             // forward cancellation to pending operation if it is currently executing
-            if (isset($deferred->pending) && $deferred->pending instanceof CancellablePromiseInterface) {
-                $deferred->pending->cancel();
+            if ($pending instanceof PromiseInterface && \method_exists($pending, 'cancel')) {
+                $pending->cancel();
             }
-            unset($deferred->pending);
+            $pending = null;
 
-            if (isset($deferred->args)) {
+            if (isset($queue[$id])) {
                 // queued promise cancelled before its handler is invoked
                 // remove from queue and reject explicitly
-                unset($queue[$id], $deferred->args);
+                unset($queue[$id]);
                 $reject(new \RuntimeException('Cancelled queued job before processing started'));
             }
         });
 
         // queue job to process if number of pending jobs is below concurrency limit again
-        $deferred->args = func_get_args();
-        $queue[$id] = $deferred;
+        $handler = $this->handler; // PHP 5.4+
+        $args = func_get_args();
+        $that = $this; // PHP 5.4+
+        $queue[$id] = function () use ($handler, $args, $deferred, &$pending, $that) {
+            $pending = \call_user_func_array($handler, $args);
+
+            $that->await($pending)->then(
+                function ($result) use ($deferred, &$pending) {
+                    $pending = null;
+                    $deferred->resolve($result);
+                },
+                function ($e) use ($deferred, &$pending) {
+                    $pending = null;
+                    $deferred->reject($e);
+                }
+            );
+        };
 
         return $deferred->promise();
     }
@@ -395,10 +424,11 @@ class Queue implements \Countable
 
     /**
      * @internal
+     * @param PromiseInterface<T> $promise
      */
     public function await(PromiseInterface $promise)
     {
-        $that = $this;
+        $that = $this; // PHP 5.4+
 
         return $promise->then(function ($result) use ($that) {
             $that->processQueue();
@@ -421,28 +451,15 @@ class Queue implements \Countable
             return;
         }
 
-        /* @var $deferred Deferred */
-        $deferred = reset($this->queue);
+        $next = reset($this->queue);
+        assert($next instanceof \Closure);
         unset($this->queue[key($this->queue)]);
 
         // once number of pending jobs is below concurrency limit again:
         // await this situation, invoke handler and await its resolution before invoking next queued job
         ++$this->pending;
 
-        $promise = call_user_func_array($this->handler, $deferred->args);
-        $deferred->pending = $promise;
-        unset($deferred->args);
-
         // invoke handler and await its resolution before invoking next queued job
-        $this->await($promise)->then(
-            function ($result) use ($deferred) {
-                unset($deferred->pending);
-                $deferred->resolve($result);
-            },
-            function ($e) use ($deferred) {
-                unset($deferred->pending);
-                $deferred->reject($e);
-            }
-        );
+        $next();
     }
 }

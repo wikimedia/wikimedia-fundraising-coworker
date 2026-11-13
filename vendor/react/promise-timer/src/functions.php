@@ -129,13 +129,18 @@ use React\Promise\PromiseInterface;
  * For more details on the promise primitives, please refer to the
  * [Promise documentation](https://github.com/reactphp/promise#functions).
  *
- * @param PromiseInterface<mixed, \Throwable|mixed> $promise
+ * @template T
+ * @param PromiseInterface<T> $promise
  * @param float $time
  * @param ?LoopInterface $loop
- * @return PromiseInterface<mixed, TimeoutException|\Throwable|mixed>
+ * @return PromiseInterface<T>
  */
-function timeout(PromiseInterface $promise, $time, LoopInterface $loop = null)
+function timeout(PromiseInterface $promise, $time, $loop = null)
 {
+    if ($loop !== null && !$loop instanceof LoopInterface) { // manual type check to support legacy PHP < 7.1
+        throw new \InvalidArgumentException('Argument #3 ($loop) expected null|React\EventLoop\LoopInterface');
+    }
+
     // cancelling this promise will only try to cancel the input promise,
     // thus leaving responsibility to the input promise.
     $canceller = null;
@@ -219,10 +224,14 @@ function timeout(PromiseInterface $promise, $time, LoopInterface $loop = null)
  *
  * @param float $time
  * @param ?LoopInterface $loop
- * @return PromiseInterface<void, \RuntimeException>
+ * @return PromiseInterface<void>
  */
-function sleep($time, LoopInterface $loop = null)
+function sleep($time, $loop = null)
 {
+    if ($loop !== null && !$loop instanceof LoopInterface) { // manual type check to support legacy PHP < 7.1
+        throw new \InvalidArgumentException('Argument #2 ($loop) expected null|React\EventLoop\LoopInterface');
+    }
+
     if ($loop === null) {
         $loop = Loop::get();
     }
@@ -275,11 +284,11 @@ function sleep($time, LoopInterface $loop = null)
  *
  * @param float $time
  * @param ?LoopInterface $loop
- * @return PromiseInterface<float, \RuntimeException>
+ * @return PromiseInterface<float>
  * @deprecated 1.8.0 See `sleep()` instead
  * @see sleep()
  */
-function resolve($time, LoopInterface $loop = null)
+function resolve($time, $loop = null)
 {
     return sleep($time, $loop)->then(function() use ($time) {
         return $time;
@@ -316,13 +325,13 @@ function resolve($time, LoopInterface $loop = null)
  * $timer->cancel();
  * ```
  *
- * @param float         $time
- * @param LoopInterface $loop
- * @return PromiseInterface<void, TimeoutException|\RuntimeException>
+ * @param float $time
+ * @param ?LoopInterface $loop
+ * @return PromiseInterface<never>
  * @deprecated 1.8.0 See `sleep()` instead
  * @see sleep()
  */
-function reject($time, LoopInterface $loop = null)
+function reject($time, $loop = null)
 {
     return sleep($time, $loop)->then(function () use ($time) {
         throw new TimeoutException($time, 'Timer expired after ' . $time . ' seconds');

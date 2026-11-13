@@ -50,8 +50,12 @@ final class UnixServer extends EventEmitter implements ServerInterface
      * @throws InvalidArgumentException if the listening address is invalid
      * @throws RuntimeException if listening on this address fails (already in use etc.)
      */
-    public function __construct($path, LoopInterface $loop = null, array $context = array())
+    public function __construct($path, $loop = null, array $context = array())
     {
+        if ($loop !== null && !$loop instanceof LoopInterface) { // manual type check to support legacy PHP < 7.1
+            throw new \InvalidArgumentException('Argument #2 ($loop) expected null|React\EventLoop\LoopInterface');
+        }
+
         $this->loop = $loop ?: Loop::get();
 
         if (\strpos($path, '://') === false) {
@@ -59,7 +63,7 @@ final class UnixServer extends EventEmitter implements ServerInterface
         } elseif (\substr($path, 0, 7) !== 'unix://') {
             throw new \InvalidArgumentException(
                 'Given URI "' . $path . '" is invalid (EINVAL)',
-                \defined('SOCKET_EINVAL') ? \SOCKET_EINVAL : 22
+                \defined('SOCKET_EINVAL') ? \SOCKET_EINVAL : (\defined('PCNTL_EINVAL') ? \PCNTL_EINVAL : 22)
             );
         }
 
